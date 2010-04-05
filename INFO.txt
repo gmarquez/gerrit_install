@@ -1,0 +1,22 @@
+*Installing Gerrit for me has not been the easiest task I've taken on so I wanted to get together some documentation about installing both Git and Gerrit to be used on our servers in a corporate environment.
+
+Due to our corporate IT standard of installing/supporting RHEL5 servers, I decided I needed to perform all my setup/testing/troubleshooting on CentOS 5.4 since it mirrored the RHEL5 environment almost identically and you don't need to have a software license subscriptin or entitlement to use yum to install/upgrade packages with dependencies.
+
+Depending on who you are or talk to some people tend to prefer installing many packages from source due to its configuration and ability to customize. However, coming into any organziation with installed packages always become a headache for any new administrator that comes in and has to take over and learn about what's installed, how it's installed, and more importantly how to upgrade it and support it. 
+
+I've also discussed this with many so-called linux experterts on IRC and many have scolded me saying installing from source is so irresponsible probably mostly due to the points listed above. 
+
+So even though many developers use and prefer to install from source and are mostly always on Fedora with the latest release, they typically don't have to suppoort these machines other than doing their own backups but supporting servers in the corporate environment. Let's make everyone's life easier and just compromise a bit =0).
+------------------------------------------------------------------------------
+
+I'll be writing up all steps I went through for my setup and what I used.
+Things such as:
+-what packages installed
+-any dependancies I downloaded/installed outside of yum
+-steps I used to build things like git
+-MySQL setup steps
+-any Troubleshooting and workarounds I figured out somehow/someway. 
+Basically any other setup steps that should provide me with enough to perform a successful Git/Gerrit setup on any RHEL/CentOS server.
+------------------------------------------------------------------------------
+
+*Keep in mind that I found different HowTos/Install steps online and this may or may not work for you and your setup but it did for me and should allow me to use these steps for sometime with our RHEL5 servers.
