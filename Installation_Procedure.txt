@@ -1,0 +1,36 @@
+Format machine (not required)-
+Recently reformatted machine with CentOS-5.4-i386-bin-(1-6)of6.iso.
+
+1). Download-install these repos:
+	- epel-release-5-3.noarch.rpm
+	- rpmforge-release-0.5.1-1.el5.rf.i386.rpm
+
+ http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-3.noarch.rpm
+ http://packages.sw.be/rpmforge-release/rpmforge-release-0.5.1-1.el5.rf.i386.rpm
+
+ Use wget with link above or
+ *See: http://fedoraproject.org/wiki/EPEL/FAQ
+ *See: https://rpmrepo.org/RPMforge/Using
+
+2). Perform upgrade of current packages:
+	yum upgrade
+	yum update
+
+3). Build and install Git
+
+Need to have rpmbuild for this step as well as some dependencies. 
+
+Dependencies needed:
+====================
+asciidoc-8.2.5-1.el5.rf.noarch.rpm <-- this worked but found newer version.
+ Check latest: http://packages.sw.be/asciidoc/ 
+ asciidoc-8.5.3-1.el5.rf.noarch.rpm  <-- As of 04-05-2010
+
+perl-Error-0.17016-1.rhel5.noarch.rpm
+
+xmlto		<-- use yum
+gcc compiler 	<-- use yum
+gcc-c++ (optional)	<-- use yum
+
+
+
