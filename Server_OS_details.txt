@@ -1,0 +1,53 @@
+OS Name:
+# cat /etc/redhat-release 
+CentOS release 5.4 (Final)
+
+# uname -a
+Linux san-gerrit.wrs.com 2.6.18-164.15.1.el5PAE #1 SMP Wed Mar 17 12:14:29 EDT 2010 i686 i686 i386 GNU/Linux
+
+Memory:
+# cat /proc/meminfo 
+MemTotal:      4081008 kB
+
+Human-readable:
+root@san-gerrit ~]# vmstat -s -S M
+         3985 M total memory
+         3122 M used memory
+         1617 M active memory
+         1394 M inactive memory
+          862 M free memory
+          220 M buffer memory
+         2484 M swap cache
+         5023 M total swap
+            0 M used swap
+         5023 M free swap
+      1516400 non-nice user cpu ticks
+        54913 nice user cpu ticks
+        75110 system cpu ticks
+     66422485 idle cpu ticks
+        35515 IO-wait cpu ticks
+        11160 IRQ cpu ticks
+         2911 softirq cpu ticks
+            0 stolen cpu ticks
+      1131171 pages paged in
+      6188283 pages paged out
+            0 pages swapped in
+            0 pages swapped out
+    371245147 interrupts
+    197728635 CPU context switches
+   1270164476 boot time
+        73702 forks
+
+Support for 4GB memory:
+rpm -qa | grep PAE:
+kernel-PAE-2.6.18-164.15.1.el5
+kernel-PAE-2.6.18-164.el5
+
+Disk Capacity:
+[root@san-gerrit ~]# df -h
+Filesystem            Size  Used Avail Use% Mounted on
+/dev/mapper/VolGroup01-LogVol00
+                      140G  8.8G  124G   7% /
+/dev/sda1              99M   19M   76M  20% /boot
+tmpfs                 2.0G     0  2.0G   0% /dev/shm
+
