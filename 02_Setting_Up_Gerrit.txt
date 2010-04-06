@@ -1,0 +1,21 @@
+INSTALLING GERRIT
+
+Resources:
+==========
+HowTo Install Java on CentOS 4 and CentOS 5-
+http://wiki.centos.org/HowTos/JavaOnCentOS
+
+Installing Jetty RPMs-
+http://docs.codehaus.org/display/JETTY/Installing+Jetty+RPMs
+
+Maven-Jetty Mirrors (check for latest jetty RPM packages):
+http://mirrors.ibiblio.org/pub/mirrors/maven/jetty/
+++++++++++++++++++++++++++++++++++++++++++++
+ *As of 04-05-10 latest is 6.1.18:
+ http://mirrors.ibiblio.org/pub/mirrors/maven/jetty/jetty-6.1.18/rpms/jetty-6.1.18-rpms.tar.gz
+++++++++++++++++++++++++++++++++++++++++++++
+
+Maven (mvn) is needed as part of the jetty installation.
+Maven-Apache Download-Install-
+http://maven.apache.org/download.html
+===============================================================================
