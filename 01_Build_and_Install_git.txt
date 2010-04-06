@@ -1,0 +1,116 @@
+Format machine (not required)-
+Recently reformatted machine with CentOS-5.4-i386-bin-(1-6)of6.iso.
+
+1). Download-install these repos:
+	- epel-release-5-3.noarch.rpm
+	- rpmforge-release-0.5.1-1.el5.rf.i386.rpm
+
+ http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-3.noarch.rpm
+ http://packages.sw.be/rpmforge-release/rpmforge-release-0.5.1-1.el5.rf.i386.rpm
+
+ Use wget with link above or
+ *See: http://fedoraproject.org/wiki/EPEL/FAQ
+ *See: https://rpmrepo.org/RPMforge/Using
+
+2). Perform upgrade of current packages:
+	yum upgrade
+	yum update
+
+3). Build and install Git
+
+Need to have rpmbuild for this step as well as some dependencies. 
+
+3a).
+Dependencies needed:
+====================
+Download and install:
+=====================
+ asciidoc-8.2.5-1.el5.rf.noarch.rpm <-- this worked but found newer version.
+ asciidoc-8.5.3-1.el5.rf.noarch.rpm  <-- As of 04-05-2010
+ Check latest: http://packages.sw.be/asciidoc/ 
+
+ perl-Error-0.17016-1.rhel5.noarch.rpm
+
+ xmlto		<-- use yum for all these
+ gcc compiler 
+ gcc-c++ (optional)
+ zlib-devel 
+ openssl-devel 
+ curl-devel 
+ expat-devel
+
+One shot: 
+ yum install xmlto gcc gcc-c++ zlib-devel openssl-devel curl-devel expat-devel
+
+Finally need to install rpm-build:
+ yum install rpm-build
+
+Once the top dependencies & rpmb-build have been installed you should be able 
+to build rpm with git-<version>.src.rpm.
+
+3b). Download latest Git or preferred git-<version>.src.rpm package from:
+http://kernel.org/pub/software/scm/git/RPMS/SRPMS/
+
+rpmbuild --rebuild git-1.7.0.4-1.fc11.src.rpm  
+
+Should take quite a bit of time and if successful place RPMs in one of the 
+/usr/src/redhat/RPMS/ directories. 
+
+Unless you setup ~/rpmbuild, then it should place in here:
+----------------------------------------------------------
+cat ~/.rpmmacros 
+ %_topdir /root/rpmbuild
+ %_tmppath %{_topdir}/tmp
+------------------------
+ mkdir -p ~/rpmbuild/{SOURCES,SRPMS,SPECS,RPMS,tmp,BUILD}
+----------------------------------------------------------
+ls ~/rpmbuild/RPMS/i386/
+git-1.7.0.4-1.i386.rpm        git-gui-1.7.0.4-1.i386.rpm
+git-all-1.7.0.4-1.i386.rpm    gitk-1.7.0.4-1.i386.rpm
+git-arch-1.7.0.4-1.i386.rpm   git-svn-1.7.0.4-1.i386.rpm
+git-cvs-1.7.0.4-1.i386.rpm    perl-Git-1.7.0.4-1.i386.rpm
+git-email-1.7.0.4-1.i386.rpm
+----------------------------------------------------------
+
++++++++++++++++++++++
+  TROUBLESHOOTING 
++++++++++++++++++++++
+
+Errors found with rpmbuild:
+===========================
+I/O error : Attempt to load network entity http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd
+/home/tonk/rpmbuild/BUILD/git-1.6.5.2/Documentation/git-add.xml:2: warning: \
+failed to load external entity "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+
+Workaround:
+===========
+Edit /etc/asciidoc/docbook.conf; change 4.5 to 4.2, as in:
+==========================================================
+ <!DOCTYPE {doctype-article?article}{doctype-book?book}{doctype-manpage?refentry} PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+ to:
+ <!DOCTYPE {doctype-article?article}{doctype-book?book}{doctype-manpage?refentry} PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+
+*See: http://tonkersten.com/archives/2009/11/20/its_broken_again/index.html
+*NOTE: I've gone through multiple steps in troubleshooting and have found another way but 
+exhausted so much effort and time to do so, this seriously seems to be the quickest!!!
+
+
+3c). Installing Git:
+ rpm -ivh git-1.7.0.4-1.i386.rpm perl-Git-1.7.0.4-1.i386.rpm gitk-1.7.0.4-1.i386.rpm
+
+*Note: The other git packages are optional and in some cases will require other packages/
+depenencies to be met/installed. Like git-svn will require subversion to be installed.
+
+3d). Setup your git projects/repositories:
+ mkdir /git/projects (anywhere you want)
+ cd /git/projects; 
+ mkdir git_repo.git;
+ cd git_repo.git; 
+ touch README; 
+ git add README;
+ git commit -am 'Initial Commit'
+
+Should now have your first git repo setup and ready to go!!!
+
+
+Continue to 02_Setting_Up_Gerrit.txt
