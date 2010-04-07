@@ -15,7 +15,166 @@ http://mirrors.ibiblio.org/pub/mirrors/maven/jetty/
  http://mirrors.ibiblio.org/pub/mirrors/maven/jetty/jetty-6.1.18/rpms/jetty-6.1.18-rpms.tar.gz
 ++++++++++++++++++++++++++++++++++++++++++++
 
+===============================================================================
+JAVA JDK-
+Install JDK from Java-Sun (required for Maven)-
+
+*CentOS is installed with:
+java-1.6.0-openjdk-1.6.0.0-1.7.b09.el5   # <--Remove.
+java-1.4.2-gcj-compat-1.4.2.0-40jpp.115
+
+I had issues with the openjdk or possibly just user error, 
+but was able to uninstall it and install a newer JDK from 
+Java Archive page and also need Java Compiler so needed to do it anyways.
+
+rpm -e java-1.6.0-openjdk-1.6.0.0-1.7.b09.el5
+
+Click on Java Archive page: http://java.sun.com/products/archive/
+
+Select the JDK/JRE-6 with the latest version (6 Update 18 - as of 040610) and click Go.
+Next page select the JDK 6u18  includes the JVM technology (NOT THE JRE), click on 
+Download JDK link.
+Select Linux for Platform and click Continue (No need to register, unless you want to).
+Click on the jdk-6u18-linux-i586-rpm.bin and select Save File.
+Make it executable:
+chmod +x jdk-6u18-linux-i586-rpm.bin 
+
+ls -l jdk-6u18-linux-i586-rpm.bin 
+-rwxr-xr-x 1 root root 80314190 Apr  6 22:20 jdk-6u18-linux-i586-rpm.bin
+
+Now run the jdk-installer:
+./jdk-6u18-linux-i586-rpm.bin
+
+Type "yes" to agree to license terms and to continue:
+-----------------------------------------------------------------------------
+Do you agree to the above license terms? [yes or no]
+yes
+Unpacking...
+Checksumming...
+Extracting...
+UnZipSFX 5.50 of 17 February 2002, by Info-ZIP (Zip-Bugs@lists.wku.edu).
+  inflating: jdk-6u18-linux-i586.rpm  
+  inflating: sun-javadb-common-10.5.3-0.2.i386.rpm  
+  inflating: sun-javadb-core-10.5.3-0.2.i386.rpm  
+  inflating: sun-javadb-client-10.5.3-0.2.i386.rpm  
+  inflating: sun-javadb-demo-10.5.3-0.2.i386.rpm  
+  inflating: sun-javadb-docs-10.5.3-0.2.i386.rpm  
+  inflating: sun-javadb-javadoc-10.5.3-0.2.i386.rpm  
+Preparing...                ##################################################
+jdk                         ##################################################
+Unpacking JAR files...
+        rt.jar...
+        jsse.jar...
+        charsets.jar...
+        tools.jar...
+        localedata.jar...
+        plugin.jar...
+        javaws.jar...
+        deploy.jar...
+Installing JavaDB
+Preparing...                ##################################################
+sun-javadb-common           ##################################################
+sun-javadb-core             ##################################################
+sun-javadb-client           ##################################################
+sun-javadb-demo             ##################################################
+sun-javadb-docs             ##################################################
+sun-javadb-javadoc          ##################################################
+
+Java(TM) SE Development Kit 6 successfully installed.
+
+Product Registration is FREE and includes many benefits:
+* Notification of new versions, patches, and updates
+* Special offers on Sun products, services and training
+* Access to early releases and documentation
+
+Product and system data will be collected. If your configuration
+supports a browser, the Sun Product Registration form for 
+the JDK will be presented. If you do not register, none of
+this information will be saved. You may also register your
+JDK later by opening the register.html file (located in 
+the JDK installation directory) in a browser.
+
+For more information on what data Registration collects and 
+how it is managed and used, see:
+http://java.sun.com/javase/registration/JDKRegistrationPrivacy.html
+
+Press Enter to continue.....
+Done.
+-----------------------------------------------------------------------------
+Web browser should take you to a registration page, I closed.
+
+Installs java and javac under /usr/java/default/bin/. 
+
+Modify alternatives for java and javac-
+
+Check/Update alternatives java:
+===============================
+Type:
+alternatives --config java
+==========================
+
+There is 1 program that provides 'java'.
+
+  Selection    Command
+-----------------------------------------------
+*+ 1           /usr/lib/jvm/jre-1.4.2-gcj/bin/java
+
+Enter to keep the current selection[+], or type selection number: [Enter]
+
+Add new java location into alternatives:
+*Can use 'update-alternatives' or 'alternatives' (both use alternatives).
+
+alternatives --install /usr/bin/java java /usr/java/default/bin/java 2
+
+Now we're going to use the added java:
+alternatives --config java
+alternatives --config java
+
+There are 2 programs which provide 'java'.
+
+  Selection    Command
+-----------------------------------------------
+*+ 1           /usr/lib/jvm/jre-1.4.2-gcj/bin/java
+   2           /usr/java/default/bin/java
+
+Enter to keep the current selection[+], or type selection number: [2 + Enter] 
+
+Can check to see if it now has a "+" on number 2:
+=================================================
+There are 2 programs which provide 'java'.
+
+  Selection    Command
+-----------------------------------------------
+*  1           /usr/lib/jvm/jre-1.4.2-gcj/bin/java
+ + 2           /usr/java/default/bin/java
+
+Enter to keep the current selection[+], or type selection number: [Enter]
+Looks good!
+
+Now type: java -version
+=======================
+java version "1.6.0_18"
+Java(TM) SE Runtime Environment (build 1.6.0_18-b07)
+Java HotSpot(TM) Client VM (build 16.0-b13, mixed mode, sharing)
+
+Type: javac -version
+====================
+javac 1.6.0_18
+
+######################################################
+-----------
+MAVEN-
 Maven (mvn) is needed as part of the jetty installation.
 Maven-Apache Download-Install-
 http://maven.apache.org/download.html
-===============================================================================
+
+Check one of the Apache Download Mirrors by clicking on the apache-maven-2.2.1-bin.tar.gz link and download or use wget with link.
+
+cd /usr/local
+wget http://mirrors.axint.net/apache/maven/binaries/apache-maven-2.2.1-bin.tar.gz
+
+tar -xvzf apache-maven-2.2.1-bin.tar.gz 
+cd apache-maven-2.2.1/
+
+######################################################
+

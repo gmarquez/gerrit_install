@@ -1,0 +1,5 @@
+# This doc should be an accumalation of various program PATHs 
+# that should be set. If you have installed all Required programs 
+# you can copy and paste this or use as a script.
+#================================================================================ 
+export PATH=/usr/local/apache-maven-2.2.1/bin:$PATH
