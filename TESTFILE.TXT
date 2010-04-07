@@ -1,3 +1,7 @@
 Setup user.name and user.email under Git Gui-Bash in WinXP.
 Adding a line from WinXP machine, which was cloned from a
 Linux Server that is a git clone --mirror of the GitHub Repo.
+
+Added a pushurl = git@github.com:gmarquez/gerrit_install.git
+to config file for WinXP repo that was cloned from my local
+mirrored git server.
