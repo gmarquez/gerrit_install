@@ -1,0 +1,1 @@
+Setup user.name and user.email under Git Gui-Bash in WinXP.
