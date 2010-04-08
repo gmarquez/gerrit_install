@@ -2,4 +2,20 @@
 # that should be set. If you have installed all Required programs 
 # you can copy and paste this or use as a script.
 #================================================================================ 
-export PATH=/usr/local/apache-maven-2.2.1/bin:$PATH
+export M2_HOME=/usr/local/apache-maven/apache-maven-2.2.1
+export M2=$M2_HOME/bin
+export MAVEN_OPTS="-Xms256m -Xmx512m"
+export JAVA_HOME=/usr/java/default
+export PATH=$M2:$JAVA_HOME:$PATH
+
+# After setting enviroments these are the expected results:
+#==========================================================
+# chmod +x 03_Set_Env.sh 
+# source 03_Set_Env.sh 
+# mvn --version
+#---------------
+Apache Maven 2.2.1 (r801777; 2009-08-06 12:16:01-0700)
+Java version: 1.6.0_18
+Java home: /usr/java/jdk1.6.0_18/jre
+Default locale: en_US, platform encoding: UTF-8
+OS name: "linux" version: "2.6.18-164.15.1.el5" arch: "i386" Family: "unix"

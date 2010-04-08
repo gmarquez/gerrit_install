@@ -10,11 +10,9 @@ http://docs.codehaus.org/display/JETTY/Installing+Jetty+RPMs
 
 Maven-Jetty Mirrors (check for latest jetty RPM packages):
 http://mirrors.ibiblio.org/pub/mirrors/maven/jetty/
-++++++++++++++++++++++++++++++++++++++++++++
+
  *As of 04-05-10 latest is 6.1.18:
  http://mirrors.ibiblio.org/pub/mirrors/maven/jetty/jetty-6.1.18/rpms/jetty-6.1.18-rpms.tar.gz
-++++++++++++++++++++++++++++++++++++++++++++
-
 ===============================================================================
 JAVA JDK-
 Install JDK from Java-Sun (required for Maven)-
@@ -103,7 +101,7 @@ Done.
 -----------------------------------------------------------------------------
 Web browser should take you to a registration page, I closed.
 
-Installs java and javac under /usr/java/default/bin/. 
+This installs java and javac under /usr/java/default/bin/. 
 
 Modify alternatives for java and javac-
 
@@ -170,11 +168,78 @@ http://maven.apache.org/download.html
 
 Check one of the Apache Download Mirrors by clicking on the apache-maven-2.2.1-bin.tar.gz link and download or use wget with link.
 
-cd /usr/local
+mkdir /usr/local/apache-maven
+cd /usr/local/apache-maven/
 wget http://mirrors.axint.net/apache/maven/binaries/apache-maven-2.2.1-bin.tar.gz
 
 tar -xvzf apache-maven-2.2.1-bin.tar.gz 
-cd apache-maven-2.2.1/
+Can delete tgz now:
+rm -f apache-maven-2.2.1-bin.tar.gz 
 
 ######################################################
+
+*USE: 03_Set_Environment.txt now and should get expected results
+prior to continuing.
+
+######################################################
+
+Download and install Jetty6 RPM tgz file here...
+Jetty Website: 
+ http://docs.codehaus.org/display/JETTY/Jetty+Wiki
+
+Jetty Downloads:
+ http://docs.codehaus.org/display/JETTY/Downloading+Jetty
+
+Linux Distro RPMs:
+ http://docs.codehaus.org/display/JETTY/Using+the+Jetty+RPMs
+
+We already have 1 (java) of 2 (ant) prerequisites for Installing Jetty6:
+Follow this page:
+ http://docs.codehaus.org/display/JETTY/Installing+Jetty+RPMs#InstallingJettyRPMs-prerequisits
+
+Use Yum to install ant:
+cd /etc/yum.repos.d
+wget http://jpackage.org/jpackage.repo
+
+yum install ant; 
+
+Issue: yum wants to install java-openjdk and java-openjdk-devel but I have 
+JDK installed already, dont want to install another java JDK! Open-jdk caused
+issues last time I tried to use it.
+
+SO trying to download just ant RPM and install:
+wget http://mirrors.dotsrc.org/jpackage/1.7/generic/free/RPMS/ant-1.6.5-4jpp.noarch.rpm
+
+rpm -ivh ant-1.6.5-4jpp.noarch.rpm
+
+error: Failed dependencies:
+        java-devel is needed by ant-1.6.5-4jpp.noarch
+ DAMN!$@#@!!!
+
+Anyway download jetty6 RPM tar file from one of the mirrors:
+(Check for latest version then download)
+ http://mirrors.ibiblio.org/pub/mirrors/maven/jetty/
+
+Latest:  jetty-6.1.18/ 19-May-2009 10:38
+
+wget http://mirrors.ibiblio.org/pub/mirrors/maven/jetty/jetty-6.1.18/rpms/jetty-6.1.18-rpms.tar.gz
+
+
+######################################################
+
+Setup gerrit2 user here...
+
+######################################################
+
+Download/Setup & Configure MySQL-Server
+Use: yum install mysql mysql-server mysql-devel (optional)
+
+Setup "reviewdb" database, gerrit2 user/password, and
+GRANT PRIVILEDGES to reviewdb database....
+
+######################################################
+
+
+
+
 
