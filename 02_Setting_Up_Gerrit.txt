@@ -27,6 +27,9 @@ Java Archive page and also need Java Compiler so needed to do it anyways.
 
 rpm -e java-1.6.0-openjdk-1.6.0.0-1.7.b09.el5
 
+ *Found java-<ver>-openjdk this may be needed or need to be installed 
+  due to required dependancy issue for installing ant.
+
 Click on Java Archive page: http://java.sun.com/products/archive/
 
 Select the JDK/JRE-6 with the latest version (6 Update 18 - as of 040610) and click Go.
@@ -224,6 +227,212 @@ Latest:  jetty-6.1.18/ 19-May-2009 10:38
 
 wget http://mirrors.ibiblio.org/pub/mirrors/maven/jetty/jetty-6.1.18/rpms/jetty-6.1.18-rpms.tar.gz
 
+Also manually get other Jetty6 dependencies because yum find
+much older versions:
+
+wget http://mirrors.dotsrc.org/jpackage/1.7/generic/free/RPMS/ant-1.6.5-4jpp.noarch.rpm
+wget http://mirrors.dotsrc.org/jpackage/1.7/generic/free/RPMS/crimson-1.1.3-17jpp.noarch.rpm
+wget http://mirrors.dotsrc.org/jpackage/1.7/generic/free/RPMS/xml-commons-1.3.03-11jpp.noarch.rpm
+wget http://mirrors.dotsrc.org/jpackage/1.7/generic/free/RPMS/xml-commons-jaxp-1.1-apis-1.3.03-11jpp.noarch.rpm
+wget http://mirrors.dotsrc.org/jpackage/1.7/generic/free/RPMS/mx4j-3.0.1-7jpp.noarch.rpm
+
+Downloaded:
+ant-1.6.5-4jpp.noarch.rpm
+crimson-1.1.3-17jpp.noarch.rpm
+mx4j-3.0.1-7jpp.noarch.rpm
+xml-commons-1.3.03-11jpp.noarch.rpm
+xml-commons-jaxp-1.1-apis-1.3.03-11jpp.noarch.rpm
+
+============================================================================
+# INSTALL DEPENDENCIES:
+============================================================================
+rpm -ivh crimson-1.1.3-17jpp.noarch.rpm 
+warning: crimson-1.1.3-17jpp.noarch.rpm: Header V3 DSA signature: NOKEY, key ID c431416d
+Preparing...                ########################################### [100%]
+   1:crimson                ########################################### [100%]
+
+rpm -ivh mx4j-3.0.1-7jpp.noarch.rpm 
+warning: mx4j-3.0.1-7jpp.noarch.rpm: Header V3 DSA signature: NOKEY, key ID c431416d
+error: Failed dependencies:
+        bcel >= 0:5.0 is needed by mx4j-3.0.1-7jpp.noarch
+        jaf is needed by mx4j-3.0.1-7jpp.noarch
+        jakarta-commons-logging >= 0:1.0.1 is needed by mx4j-3.0.1-7jpp.noarch
+        javamail >= 0:1.2-5jpp is needed by mx4j-3.0.1-7jpp.noarch
+        log4j >= 0:1.2.7 is needed by mx4j-3.0.1-7jpp.noarch
+
+
+# yum install mx4j
+Dependencies Resolved
+
+Installed:
+  mx4j.i386 1:3.0.1-6jpp.4
+
+Dependency Installed:
+  axis.i386 0:1.2.1-2jpp.6
+  bcel.i386 0:5.1-8jpp.1
+  classpathx-jaf.i386 0:1.0-9jpp.1
+  classpathx-mail.i386 0:1.1.1-4jpp.2
+  jakarta-commons-discovery.i386 1:0.3-4jpp.1
+  jakarta-commons-httpclient.i386 1:3.0-7jpp.1
+  jakarta-commons-logging.i386 0:1.0.4-6jpp.1
+  log4j.i386 0:1.2.13-3jpp.2
+  regexp.i386 0:1.4-2jpp.2
+  wsdl4j.i386 0:1.5.2-4jpp.1
+
+Complete!
+
+# yum install ant
+
+Installed:
+  ant.i386 0:1.6.5-2jpp.2
+Dependency Installed:
+  java-1.6.0-openjdk.i386 1:1.6.0.0-1.7.b09.el5
+  java-1.6.0-openjdk-devel.i386 1:1.6.0.0-1.7.b09.el5
+
+Complete!
+
+Last one to install is xml-commons-jaxp-1.1-apis-1.3.03011jpp:
+
+# rpm -Uvh xml-commons-jaxp-1.1-apis-1.3.03-11jpp.noarch.rpm 
+warning: xml-commons-jaxp-1.1-apis-1.3.03-11jpp.noarch.rpm: Header V3 DSA signature: NOKEY, key ID c431416d
+error: Failed dependencies:
+        xml-commons = 0:1.3.03-11jpp is needed by xml-commons-jaxp-1.1-apis-1.3.03-11jpp.noarch
+
+XML-COMMONS errors, currently installed:
+# rpm -qa | grep xml-commons-
+xml-commons-1.3.02-0.b2.7jpp.10
+xml-commons-resolver-1.1-1jpp.12
+xml-commons-apis-1.3.02-0.b2.7jpp.10
+
+
+# rpm -e xml-commons-1.3.02-0.b2.7jpp.10 xml-commons-resolver-1.1-1jpp.12 xml-commons-apis-1.3.02-0.b2.7jpp.10
+error: Failed dependencies:
+        xml-commons is needed by (installed) mx4j-3.0.1-6jpp.4.i386
+        xml-commons-resolver >= 1.1 is needed by (installed) xerces-j2-2.7.1-7jpp.2.el5_4.2.i386
+        xml-commons-resolver is needed by (installed) mx4j-3.0.1-6jpp.4.i386
+
+wget http://candrews.integralblue.com/wp-content/uploads/2009/07/jpackage-utils-compat-el5-0.0.1-1.noarch.rpm
+# rpm -ibh jpackage-utils-compat-el5-0.0.1-1.noarch.rpm
+(still no resolve!)
+
+# rpm -e --nodeps xml-commons-apis
+# yum upgrade
+
+*Now works!!! Seems xml-commons-apis breaks everything!!!
+RESULTS:
+========
+Installed:
+  xml-commons-resolver10.noarch 0:1.3.03-11jpp
+  xml-commons-resolver11.noarch 0:1.3.03-11jpp
+  xml-commons-resolver12.noarch 0:1.3.03-11jpp
+
+Dependency Installed:
+  avalon-framework.i386 0:4.1.4-2jpp.13
+  avalon-logkit.i386 0:1.2-4jpp.3
+  geronimo-specs.i386 0:1.0-0.M2.2jpp.12.el5.centos
+  geronimo-specs-compat.i386 0:1.0-0.M2.2jpp.12.el5.centos
+  jakarta-commons-collections.i386 0:3.2-2jpp.3
+  jakarta-oro.i386 0:2.0.8-3jpp.1
+  jdom.i386 0:1.0-4jpp.1
+  velocity.i386 0:1.4-6jpp.1
+  werken-xpath.i386 0:0.9.4-0.beta.12jpp.1
+  xml-commons-jaxp-1.3-apis.noarch 0:1.3.03-11jpp
+
+Updated:
+  ant.noarch 0:1.6.5-4jpp
+  antlr.noarch 0:2.7.7-1jpp
+  axis.noarch 0:1.4-2jpp
+  bcel.noarch 0:5.2-3jpp
+  bsf.noarch 0:2.4.0-1jpp
+  bsh.noarch 0:1.3.0-11jpp
+  classpathx-jaf.noarch 0:1.0-10jpp
+  jakarta-commons-discovery.noarch 1:0.4-2jpp
+  jakarta-commons-httpclient.noarch 1:3.0.1-1jpp
+  jakarta-commons-logging.noarch 0:1.1-4jpp
+  jpackage-utils.noarch 0:1.7.5-1jpp
+  log4j.noarch 0:1.2.14-3jpp
+  regexp.noarch 0:1.4-3jpp
+  tomcat5-jsp-2.0-api.noarch 0:5.5.25-1jpp
+  tomcat5-servlet-2.4-api.noarch 0:5.5.25-1jpp
+  wsdl4j.noarch 0:1.6.2-2jpp
+  xalan-j2.noarch 0:2.7.0-7jpp
+  xerces-j2.noarch 0:2.9.0-2jpp
+  xml-commons.noarch 0:1.3.03-11jpp
+
+Replaced:
+  xml-commons-resolver.i386 0:1.1-1jpp.12
+
+Complete!
+
+# rpm -ivh xml-commons-jaxp-1.1-apis-1.3.03-11jpp.noarch.rpm 
+Preparing...                ########################################### [100%]
+   1:xml-commons-jaxp-1.1-ap########################################### [100%]
+
+# yum update 
+ Failing again, Error: Missing Dependencies...
+
+# rpm -qa | grep apis
+xml-commons-jaxp-1.1-apis-1.3.03-11jpp
+xml-commons-jaxp-1.3-apis-1.3.03-11jpp
+# rpm -e --nodeps xml-commons-apis
+error: package xml-commons-apis is not installed
+# rpm -e --nodeps xml-commons-jaxp
+error: package xml-commons-jaxp is not installed
+# rpm -e --nodeps xml-commons-jaxp-1.1-apis
+# rpm -e --nodeps xml-commons-jaxp-1.3-apis
+# rpm -qa | grep apis
+none!!!
+
+# yum update 
+
+Now errors about Error: Missing depends.. geronimo-specs, so:
+
+# yum erase geronimo-specs-compat
+
+Removed:
+  geronimo-specs-compat.i386 0:1.0-0.M2.2jpp.12.el5.centos
+
+Dependency Removed:
+  avalon-logkit.i386 0:1.2-4jpp.3
+  bsf.noarch 0:2.4.0-1jpp
+  bsh.noarch 0:1.3.0-11jpp
+  openoffice.org-calc.i386 1:2.3.0-6.11.el5_4.4
+  openoffice.org-core.i386 1:2.3.0-6.11.el5_4.4
+  openoffice.org-draw.i386 1:2.3.0-6.11.el5_4.4
+  openoffice.org-graphicfilter.i386 1:2.3.0-6.11.el5_4.4
+  openoffice.org-impress.i386 1:2.3.0-6.11.el5_4.4
+  openoffice.org-math.i386 1:2.3.0-6.11.el5_4.4
+  openoffice.org-writer.i386 1:2.3.0-6.11.el5_4.4
+  openoffice.org-xsltfilter.i386 1:2.3.0-6.11.el5_4.4
+  velocity.i386 0:1.4-6jpp.1
+Complete!
+
+# yum update
+
+Now seems to be working again!!!!
+============================================================================
+
+Complete Install of Jetty6 RPMS:
+
+# rpm -ivh :
+
+jetty6-6.1.18-1jpp.noarch.rpm
+jetty6-core-6.1.18-1jpp.noarch.rpm
+jetty6-jsp-2.1-6.1.18-1jpp.noarch.rpm
+jetty6-plus-6.1.18-1jpp.noarch.rpm
+jetty6-servlet-2.5-api-6.1.18-1jpp.noarch.rpm
+# optional
+jetty6-javadoc-6.1.18-1jpp.noarch.rpm
+jetty6-demos-6.1.18-1jpp.noarch.rpm
+
+Preparing...                ########################################### [100%]
+   1:jetty6-servlet-2.5-api ########################################### [ 20%]
+   2:jetty6-core            ########################################### [ 40%]
+   3:jetty6                 ########################################### [ 60%]
+   4:jetty6-jsp-2.1         ########################################### [ 80%]
+   5:jetty6-plus            ########################################### [100%]
+
+Configure or chkconfig it now...
 
 ######################################################
 
