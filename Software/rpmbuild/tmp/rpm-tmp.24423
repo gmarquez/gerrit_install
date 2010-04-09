@@ -1,0 +1,29 @@
+#!/bin/sh
+
+  RPM_SOURCE_DIR="/root/rpmbuild/SOURCES"
+  RPM_BUILD_DIR="/root/rpmbuild/BUILD"
+  RPM_OPT_FLAGS="-O2 -g -m32 -march=i386 -mtune=generic -fasynchronous-unwind-tables"
+  RPM_ARCH="i386"
+  RPM_OS="linux"
+  export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS
+  RPM_DOC_DIR="/usr/share/doc"
+  export RPM_DOC_DIR
+  RPM_PACKAGE_NAME="git"
+  RPM_PACKAGE_VERSION="1.7.0.4"
+  RPM_PACKAGE_RELEASE="1"
+  export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE
+  RPM_BUILD_ROOT="/root/rpmbuild/tmp/git-1.7.0.4-1-root-root"
+  export RPM_BUILD_ROOT
+  
+  PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig"
+  export PKG_CONFIG_PATH
+  
+  set -x
+  umask 022
+  cd "/root/rpmbuild/BUILD"
+cd 'git-1.7.0.4'
+make  CFLAGS="$RPM_OPT_FLAGS" \
+     ETC_GITCONFIG=/etc/gitconfig prefix=/usr mandir=/usr/share/man htmldir=/usr/share/doc/git-1.7.0.4 \
+     all  doc
+
+exit 0
