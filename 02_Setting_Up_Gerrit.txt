@@ -432,11 +432,110 @@ Preparing...                ########################################### [100%]
    4:jetty6-jsp-2.1         ########################################### [ 80%]
    5:jetty6-plus            ########################################### [100%]
 
-Configure or chkconfig it now...
+Enable Jetty6 for Startup-
+==========================
 
+chkconfig --list | grep jetty6
+
+If not listed: 
+ chkconfig --add jetty6
+
+If not enabled/on: 
+ chkconfig jetty6 on
+
+Check:
+jetty6          0:off   1:off   2:off   3:on    4:off   5:off   6:off
+
+CONFIGURE JETTY6 for HTTP Authentication:
+=========================================
+Currently set to OPENID, need to change
+/home/gerrit2/review_site/etc/gerrit.config:
+ [auth]
+         type = OPENID
+
+Change to HTTP:
+cd /home/gerrit2/
+git config --file review_site/etc/gerrit.config auth.type HTTP
+git config --file review_site/etc/gerrit.config --unset auth.httpHeader
+git config --file review_site/etc/gerrit.config auth.emailFormat '{0}@yourdomain.com'
+
+gerrit.config now should look like:
+[auth]
+        type = HTTP
+        emailFormat = {0}@yourdomain.com
+
+Setup HTTP Authentication passwd file:
+
+I setup my passwd file in /home/gerrit2/review_site/access/passwd.
+
+*NIS Domain, I setup a script to 'ypcat -k passwd' and output to
+passwd file. You can do this if you have NIS domain or use shadow file.
+ ypcat -k passwd | cut -d : -f1-2 | sed -e "s/ .*:/:/" > passwd
+
+Password file format:
+=====================
+username:<encrypted-password>
+
+Edit /etc/httpd/conf/httpd.conf:
+================================
+ <Location "/">
+	# Require Authentication
+    AuthType Basic
+    AuthName "Gerrit Review Server"
+    Require valid-user
+    AuthUserFile /home/gerrit2/review_site/access/passwd
+ </Location>
+
+HTTP WITH REVERSE PROXY SETTINGS:
+=================================
+<VirtualHost *>
+  ServerName gitserver1.mydomain.com
+
+  ProxyRequests Off
+  ProxyVia Off
+  ProxyPreserveHost On
+
+  <Location "/ssh_info">
+     ProxyPass http://127.0.0.1:8081/ssh_info
+     Allow from all
+     Satisfy Any
+  </Location>
+
+  <Location "/">
+	# Require Authentication
+     AuthType Basic
+     AuthName "Gerrit Review Server"
+     Require valid-user
+     AuthUserFile /home/gerrit2/review_site/access/passwd
+  </Location>
+
+  <Proxy *>
+     Order deny,allow
+     Allow from all
+  </Proxy>
+  # ProxyPass / http://127.0.0.1:8081/
+  ProxyPass /r/ http://127.0.0.1:8081/r/
+
+  <IfModule mod_disk_cache.c>
+     CacheEnable disk /
+     CacheIgnoreHeaders Set-Cookie
+  </IfModule>
+</VirtualHost>
 ######################################################
 
-Setup gerrit2 user here...
+SETUP GERRIT2 USER:
+===================
+# Copy and input this:
+useradd \
+-r \
+-s /bin/sh \
+-c 'Gerrit Code Review' \
+-m \
+gerrit2
+
+ or:
+
+useradd -r -s /bin/sh -c 'Gerrit Code Review' -m gerrit2
 
 ######################################################
 
