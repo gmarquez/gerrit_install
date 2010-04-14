@@ -469,6 +469,39 @@ service postgresql start
 
 Connect to Psql DB (as root):
 # sudo -u postgres psql
+ \l to list databases
+ \h for help
+ \q to quit.
+
+Create "gerrit2" user in Postgresql:
+===================================
+Use: sudo -u postgres createuser -A -D -P -E gerrit2
+ createuser [ option... ]  [ username ]
+  Options:
+ -A -  Couldn't find any -A option but didn't complain about using it.
+ -D | --no-createdb - User not allowed to create databases.
+ -P | --pwprompt - Prompt for password of the new user.
+ -E | --encrypted - Encrypts the user's password in the database.
+
+# sudo -u postgres createuser -A -D -P -E gerrit2
+Enter password for new role: 
+Enter it again: 
+Shall the new role be allowed to create more new roles? (y/n) n
+CREATE ROLE
+
+Create "reviewdb" DB in Postgresql:
+===================================
+Use: sudo -u postgres createdb -E UTF-8 -O gerrit2 reviewdb
+ createdb [ option... ]  [ dbname ]  [ description ]
+  Options:
+ -E | --encoding - Specify the character encoding scheme to be used in database.
+ -O | --owner - Database user who will own the new database.
+
+# sudo -u postgres createdb -E UTF-8 -O gerrit2 reviewdb
+CREATE DATABASE
+
+
+<STOPPED-HERE>
 
 DOWNLOAD & SETUP GERRIT:
 ========================
@@ -498,7 +531,6 @@ cd /home/gerrit2/
 wget http://gerrit.googlecode.com/files/gerrit-2.1.2.2.war
 
 
-<STOPPED-HERE>
 
 
 ######################################################
