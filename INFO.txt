@@ -31,6 +31,7 @@ Things such as:
 -any dependancies I downloaded/installed outside of yum
 -steps I used to build things like git
 -MySQL setup steps
+-PostgreSQL setup steps *Moved to this cuz need to get this working for my job.
 -any Troubleshooting and workarounds I figured out somehow/someway. 
 Basically any other setup steps that should provide me with enough to perform a successful 
 Git/Gerrit setup on any RHEL/CentOS server.
