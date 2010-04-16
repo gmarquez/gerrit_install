@@ -3,7 +3,7 @@ OS Name:
 CentOS release 5.4 (Final)
 
 # uname -a
-Linux san-gerrit.wrs.com 2.6.18-164.15.1.el5PAE #1 SMP Wed Mar 17 12:14:29 EDT 2010 i686 i686 i386 GNU/Linux
+Linux san-gerrit.mydomain.com 2.6.18-164.15.1.el5PAE #1 SMP Wed Mar 17 12:14:29 EDT 2010 i686 i686 i386 GNU/Linux
 
 Memory:
 # cat /proc/meminfo 
