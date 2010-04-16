@@ -625,6 +625,26 @@ Initialized /home/gerrit2/review_site
 
 ============================================================================
 
+************************************************
+I'm having an issue here with it not working!
+
+I setup the reverse proxy just like our production server
+I copied the settings inside httpd.conf.
+I made sure HTTPD was running and also set it to start on boot.
+
+chkconfig httpd on
+chkconfig --list | grep httpd
+httpd           0:off   1:off   2:on    3:on    4:on    5:on    6:off
+
+I setup my passwd file based on location of httpd.conf:
+/home/gerrit2/review_site/access/passwd
+I added gerrit2 by greping gerrit2 /etc/shadow (not sure if it needs it).
+But also have all users in NIS domain with format of 'username:<encypt_password>'
+
+I also restarted jetty6.
+
+************************************************
+
 
 ######################################################
 
@@ -686,7 +706,7 @@ HTTP WITH REVERSE PROXY SETTINGS:
   <Location "/">
 	# Require Authentication
      AuthType Basic
-     AuthName "Gerrit Review Server"
+     AuthName "NEW Gerrit Review Server"
      Require valid-user
      AuthUserFile /home/gerrit2/review_site/access/passwd
   </Location>
@@ -705,16 +725,19 @@ HTTP WITH REVERSE PROXY SETTINGS:
 </VirtualHost>
 ######################################################
 
-
-Download/Setup & Configure MySQL-Server
-Use: yum install mysql mysql-server mysql-devel (optional)
-
-Setup "reviewdb" database, gerrit2 user/password, and
-GRANT PRIVILEDGES to reviewdb database....
-
+This is old from MYSQL initial Setup:
+###########################################################
+#
+#Download/Setup & Configure MySQL-Server
+#Use: yum install mysql mysql-server mysql-devel (optional)
+#
+#Setup "reviewdb" database, gerrit2 user/password, and
+#GRANT PRIVILEDGES to reviewdb database....
+###########################################################
 ######################################################
 
 
-
+*Hopefully I'll get this working soon!
+=/
 
 
