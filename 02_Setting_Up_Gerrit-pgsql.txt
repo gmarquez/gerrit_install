@@ -501,15 +501,7 @@ Use: sudo -u postgres createdb -E UTF-8 -O gerrit2 reviewdb
 CREATE DATABASE
 
 
-<STOPPED-HERE>
-
-DOWNLOAD & SETUP GERRIT:
-========================
-Check http://code.google.com/p/gerrit/ for latest software version & docs.
-
-*Current version is gerrit-2.1.2.2.war.
-
-*Should be setup as gerrit2 user in /home/gerrit2 (according to docs).
+#<STOPPED-HERE>
 
 CREATE GERRIT2 USER:
 ====================
@@ -525,12 +517,113 @@ gerrit2
 
 useradd -r -s /bin/sh -c 'Gerrit Code Review' -m gerrit2
 
+
+DOWNLOAD & SETUP GERRIT:
+========================
+Check http://code.google.com/p/gerrit/ for latest software version & docs.
+
+*Current version is gerrit-2.1.2.2.war.
+
+*Should be setup as gerrit2 user in /home/gerrit2 (according to docs).
+
+COMMANDS:
+=========
 su gerrit2
 cd /home/gerrit2/
 
 wget http://gerrit.googlecode.com/files/gerrit-2.1.2.2.war
 
+Initialize the reviewdb site:
+=============================
+java -jar gerrit-2.1.2.2.war init -d review_site
 
+*You may need to reset your enviroment from script we created:
+$source 03_Set_Env.sh 
+
+*This will prompt through a series of questions.
+
+============================================================================
+INIT_REVIEWDB.LOG:
+============================================================================
+
+*** Gerrit Code Review 2.1.2.2
+*** 
+
+Create '/home/gerrit2/review_site' [Y/n]? Y
+
+*** Git Repositories
+*** 
+
+Location of Git repositories   [git]: /git/projects
+Import existing repositories   [Y/n]? Y
+
+*** SQL Database
+*** 
+
+Database server type           [H2/?]: ?
+       Supported options are:
+         h2
+         postgresql
+         mysql
+         jdbc
+Database server type           [H2/?]: postgresql
+Server hostname                [localhost]: 
+Server port                    [(POSTGRESQL default)]: 
+Database name                  [reviewdb]: 
+Database username              [gerrit2]: 
+gerrit2's password             : 
+              confirm password : 
+
+*** User Authentication
+*** 
+
+Authentication method          [OPENID/?]: HTTP
+Get username from custom HTTP header [y/N]? 
+SSO logout URL                 : 
+
+*** Email Delivery
+*** 
+
+SMTP server hostname           [localhost]:
+SMTP server port               [(default)]: 
+SMTP encryption                [NONE/?]: 
+SMTP username                  : 
+
+*** Container Process
+*** 
+
+Run as                         [gerrit2]: 
+Java runtime                   [/usr/java/jdk1.6.0_18/jre]: 
+Copy gerrit.war to /home/gerrit2/review_site/bin/gerrit.war [Y/n]? Y
+Copying gerrit.war to /home/gerrit2/review_site/bin/gerrit.war
+
+*** SSH Daemon
+*** 
+
+Listen on address              [*]: 
+Listen on port                 [29418]: 
+
+Gerrit Code Review is not shipped with Bouncy Castle Crypto v144
+  If available, Gerrit can take advantage of features
+  in the library, but will also function without it.
+Download and install it now [Y/n]? Y
+Downloading http://www.bouncycastle.org/download/bcprov-jdk16-144.jar ... OK
+Checksum bcprov-jdk16-144.jar OK
+Generating SSH host key ... rsa... dsa... done
+
+*** HTTP Daemon
+*** 
+
+Behind reverse proxy           [y/N]?  
+Use SSL (https://)             [y/N]? 
+Listen on address              [*]: 
+Listen on port                 [8080]: 
+
+Scanning /git/projects/git
+Scanning /git/projects
+Initialized /home/gerrit2/review_site
+
+============================================================================
 
 
 ######################################################
