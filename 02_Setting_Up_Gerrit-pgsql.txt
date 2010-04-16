@@ -484,8 +484,8 @@ Use: sudo -u postgres createuser -A -D -P -E gerrit2
  -E | --encrypted - Encrypts the user's password in the database.
 
 # sudo -u postgres createuser -A -D -P -E gerrit2
-Enter password for new role: 
-Enter it again: 
+Enter password for new role: g3rrit2
+Enter it again: g3rrit2
 Shall the new role be allowed to create more new roles? (y/n) n
 CREATE ROLE
 
@@ -690,6 +690,8 @@ Edit /etc/httpd/conf/httpd.conf:
 
 HTTP WITH REVERSE PROXY SETTINGS:
 =================================
+*Not sure how correct this is, but its working on our Prod Server.
+
 <VirtualHost *>
   ServerName gitserver1.mydomain.com
 
