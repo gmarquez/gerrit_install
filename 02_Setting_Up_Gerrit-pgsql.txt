@@ -500,8 +500,36 @@ Use: sudo -u postgres createdb -E UTF-8 -O gerrit2 reviewdb
 # sudo -u postgres createdb -E UTF-8 -O gerrit2 reviewdb
 CREATE DATABASE
 
+Should Test login as gerrit2 to pgsql DB reviewdb:
+==================================================
+$ psql -d reviewdb -U gerrit2 -W  (-W to prompt for password)
 
-#<STOPPED-HERE>
+I had issues at first, needed to change pg_hba.conf and resart postgresql:
+*Change ident sameuser to either md5 or trust.
+
+Edit /var/lib/pgsql/data/pg_hba.conf 
+===========================================================
+local   all         all                               trust
+host    all         all         127.0.0.1/32          trust
+host    all         all         ::1/128               trust
+
+# service postgresql restart
+ Stopping postgresql service:                               [  OK  ]
+ Starting postgresql service:                               [  OK  ]
+
+RE-TRY:
+=======
+# psql -d reviewdb -U gerrit2 -W
+Password for user gerrit2: [g3rrit2]
+Welcome to psql 8.1.18, the PostgreSQL interactive terminal.
+
+Type:  \copyright for distribution terms
+       \h for help with SQL commands
+       \? for help with psql commands
+       \g or terminate with semicolon to execute query
+       \q to quit
+
+reviewdb=> \q
 
 CREATE GERRIT2 USER:
 ====================
