@@ -1,0 +1,36 @@
+Using these for CentOS install, just for personal saving:
+
+Gerrit-
+
+Gerrit download:
+http://code.google.com/p/gerrit/downloads/list
+
+Installing Java on CentOS:
+http://wiki.centos.org/HowTos/JavaOnCentOS
+Java Archive Page for downloads:
+http://java.sun.com/products/archive/
+
+Some Install/HowTos I found:
+http://unethicalblogger.com/node/241
+http://gregmeiste.com/2009/06/gerrit-code-review-installation/
+http://gerrit.googlecode.com/svn/documentation/2.1.2/index.html
+http://www.mailinglistarchive.com/repo-discuss@googlegroups.com/msg01145.html
+
+Jetty6 Installation & RPMs Links:
+http://docs.codehaus.org/display/JETTY/Installing+Jetty+RPMs
+Latest Version of jetty6:
+http://mirrors.ibiblio.org/pub/mirrors/maven/jetty/
+
+Maven-Apache:
+http://maven.apache.org/
+
+
+Harvard FTP Site with lots of packages (Java, Jetty, etc):
+ftp://jpackage.hmdc.harvard.edu/JPackage/6.0/generic/SRPMS.non-free/
+
+
+***************************************************************************
+Only saving this file because trying to re-format another hard drive
+and going to see if I can just follow Gerrit Code Review Installation Guide:
+http://gerrit.googlecode.com/svn/documentation/2.1.2/index.html
+***************************************************************************
