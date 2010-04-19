@@ -505,6 +505,11 @@ Should Test login as gerrit2 to pgsql DB reviewdb:
 $ psql -d reviewdb -U gerrit2 -W  (-W to prompt for password)
 
 I had issues at first, needed to change pg_hba.conf and resart postgresql:
+#################################################################
+# psql -U gerrit2 -d reviewdb
+# psql: FATAL:  Ident authentication failed for user "gerrit2"
+#################################################################
+WORKAROUND/SOLUTION:
 *Change ident sameuser to either md5 or trust.
 
 Edit /var/lib/pgsql/data/pg_hba.conf 
@@ -516,6 +521,8 @@ host    all         all         ::1/128               trust
 # service postgresql restart
  Stopping postgresql service:                               [  OK  ]
  Starting postgresql service:                               [  OK  ]
+
+#################################################################
 
 RE-TRY:
 =======
@@ -551,7 +558,6 @@ DOWNLOAD & SETUP GERRIT:
 Check http://code.google.com/p/gerrit/ for latest software version & docs.
 
 *Current version is gerrit-2.1.2.2.war.
-
 *Should be setup as gerrit2 user in /home/gerrit2 (according to docs).
 
 COMMANDS:
@@ -755,15 +761,6 @@ HTTP WITH REVERSE PROXY SETTINGS:
 </VirtualHost>
 ######################################################
 
-This is old from MYSQL initial Setup:
-###########################################################
-#
-#Download/Setup & Configure MySQL-Server
-#Use: yum install mysql mysql-server mysql-devel (optional)
-#
-#Setup "reviewdb" database, gerrit2 user/password, and
-#GRANT PRIVILEDGES to reviewdb database....
-###########################################################
 ######################################################
 
 
