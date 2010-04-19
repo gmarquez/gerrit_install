@@ -34,3 +34,12 @@ Only saving this file because trying to re-format another hard drive
 and going to see if I can just follow Gerrit Code Review Installation Guide:
 http://gerrit.googlecode.com/svn/documentation/2.1.2/index.html
 ***************************************************************************
+Apache Auth Links:
+==================
+
+http://httpd.apache.org/docs/2.0/howto/auth.html
+
+http://wiki.apache.org/httpd/PasswordBasicAuth
+
+http://wiki.apache.org/httpd/13PermissionDenied
+
