@@ -761,6 +761,18 @@ HTTP WITH REVERSE PROXY SETTINGS:
 </VirtualHost>
 ######################################################
 
+At home, just setup Gerrit with most required depends,
+but No HTTP Auth used OPENID, and NO reverse-proxy:
+
+[gerrit2@server1 ~]$ find ./ -name *.sh
+./review_site/bin/gerrit.sh
+[gerrit2@server1 ~]$ ./review_site/bin/gerrit.sh 
+Usage: gerrit.sh {start|stop|restart|check|run|supervise} [-d site]
+[gerrit2@server1 ~]$ ./review_site/bin/gerrit.sh start
+Starting Gerrit Code Review: OK
+
+Was able to go to: http://localhost:8080/
+Going to see if I can now modify to HTTP to use a passwd file.
 ######################################################
 
 
