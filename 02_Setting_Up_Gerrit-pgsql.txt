@@ -773,6 +773,13 @@ Starting Gerrit Code Review: OK
 
 Was able to go to: http://localhost:8080/
 Going to see if I can now modify to HTTP to use a passwd file.
+
+Setup Start/Stop Gerrit Daemon:
+===============================
+
+# ln -snf /home/gerrit2/review_site/bin/gerrit.sh  /etc/init.d/gerrit.sh
+# ln -snf /etc/init.d/gerrit.sh /etc/rc3.d/s90gerrit
+
 ######################################################
 
 
