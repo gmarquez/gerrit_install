@@ -114,3 +114,4 @@ Should now have your first git repo setup and ready to go!!!
 
 
 Continue to 02_Setting_Up_Gerrit.txt
+http://github.com/gmarquez/gerrit_install/blob/master/02_Setting_Up_Gerrit-pgsql.txt
