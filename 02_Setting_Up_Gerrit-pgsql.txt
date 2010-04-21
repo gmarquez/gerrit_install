@@ -473,6 +473,27 @@ Connect to Psql DB (as root):
  \h for help
  \q to quit.
 
+# SETUP Password for postgres db user:
+=====================================
+# sudo -u postgres psql
+could not change directory to "/root"
+Welcome to psql 8.1.18, the PostgreSQL interactive terminal.
+
+Type:  \copyright for distribution terms
+       \h for help with SQL commands
+       \? for help with psql commands
+       \g or terminate with semicolon to execute query
+       \q to quit
+
+postgres=# alter user postgres with password 'psql@dmin';
+ALTER ROLE
+postgres=# \q
+
+++++++++++++++++++++
+User: postgres
+Password: psql@dmin
+++++++++++++++++++++
+
 Create "gerrit2" user in Postgresql:
 ===================================
 Use: sudo -u postgres createuser -A -D -P -E gerrit2
