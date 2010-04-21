@@ -2,4 +2,6 @@
 # Add files to ignore like '*.tmp, .*, *.~'
 # Add exceptions to any files by adding a '!.gitignore'
 #====================================================================
+# Want to not track: Postgresql_Backup&Restore.txt~
 *.~
+*.*~
