@@ -1,0 +1,20 @@
+BACKUP Postgresql "reviewdb" DB:
+================================
+sudo -u postgres pg_dump -O -Fc reviewdb > reviewdb.dump
+
+sudo -u postgres pg_dump -O -FP reviewdb > reviewdb-plain-text.dump
+
+Dump the database with pgdump and restore it on the
+new server.  I do this all of the time to help debug issues with
+a production installation.  Its basically just:
+
+ pg_dump -O -Fc reviewdb > dump
+ scp dump target:
+
+ createdb -E UTF-8 -O gerrit2 reviewdb
+ pg_restore -d reviewdb dump
+
+
+RESTORE Postgresql "reviewdb" DB:
+=================================
+

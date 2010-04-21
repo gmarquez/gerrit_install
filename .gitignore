@@ -1,0 +1,5 @@
+# This is my .gitignore file to setup files I dont git want to track.
+# Add files to ignore like '*.tmp, .*, *.~'
+# Add exceptions to any files by adding a '!.gitignore'
+#====================================================================
+*.~
