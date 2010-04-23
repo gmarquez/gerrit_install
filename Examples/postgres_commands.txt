@@ -1,0 +1,102 @@
+ yum install postgresql postgresql-server postgresql-libs postgresql-devel
+ chkconfig --list | grep postgres
+ chkconfig postgresql on
+ chkconfig --list | grep postgres
+ service postgresql start
+ sudo -H -u postgres createuser -A -D -P -E gerrit2
+ sudo -H -u postgres createdb -E UTF-8 -O gerrit2 reviewdb
+ service postgresql restart
+ rpm -qa | grep postgres
+ sudo -u postgres psql
+ su postgres
+ service postgresql reload
+ ls /etc/init.d/postgresql 
+ sudo -u postgres psql
+ sudo -u postgres pg_dump -O -Fc reviewdb > /usr/local/dumps/reviewdb_default-042110.dump
+ sudo -u postgres pg_dump -O -Fc reviewdb > /usr/local/dumps/reviewdb_default-042110.dump
+ sudo -u postgres pg_dump -O -Fc reviewdb > /usr/local/dumps/reviewdb_default-042110.dump
+ sudo -u postgres psql
+ sudo -u postgres psql
+ psql -U postgres
+ psql -U postgres
+ sudo -u postgres psql
+ sudo -u postgres psql
+ sudo -u postgres pg_dump -O -Fc reviewdb > /usr/local/dumps/reviewdb_default-042110.dump
+ sudo -u postgres pg_dump -O -FP reviewdb > /usr/local/dumps/reviewdb_default-Plain-Text-042110.dump
+ sudo -u postgres pg_dumpall > san-gerrit1/all_DBs-042110.dump
+ sudo -u postgres vacummdb -a -z
+ sudo -u postgres pgsql
+ sudo -u postgres psql
+ sudo -u postgres vacuumdb -a -z
+ sudo -u postgres vacuumdb -a -z
+ psql reviewdb < reviewdb-Modified-Plain_042110.dump
+
+#######################################################
+# history  | grep postgres
+ yum install postgresql postgresql-server postgresql-libs postgresql-devel
+ chkconfig --list | grep postgres
+ chkconfig postgresql on
+ chkconfig --list | grep postgres
+ service postgresql start
+ sudo -H -u postgres createuser -A -D -P -E gerrit2
+ sudo -H -u postgres createdb -E UTF-8 -O gerrit2 reviewdb
+ service postgresql restart
+ rpm -qa | grep postgres
+ sudo -u postgres psql
+ su postgres
+ service postgresql reload
+ ls /etc/init.d/postgresql 
+ sudo -u postgres psql
+ sudo -u postgres pg_dump -O -Fc reviewdb > /usr/local/dumps/reviewdb_default-042110.dump
+ sudo -u postgres pg_dump -O -Fc reviewdb > /usr/local/dumps/reviewdb_default-042110.dump
+ sudo -u postgres pg_dump -O -Fc reviewdb > /usr/local/dumps/reviewdb_default-042110.dump
+ sudo -u postgres psql
+ sudo -u postgres psql
+ sudo -u postgres psql
+ sudo -u postgres psql
+ sudo -u postgres psql
+ psql -U postgres
+ psql -U postgres
+ psql -U postgres
+ psql -U postgres
+ psql -U postgres
+ psql -U postgres
+ psql -U postgres
+ sudo -u postgres psql
+ sudo -u postgres psql
+ sudo -u postgres psql
+ sudo -u postgres psql
+ sudo -u postgres pg_dump -O -Fc reviewdb > /usr/local/dumps/reviewdb_default-042110.dump
+ sudo -u postgres pg_dump -O -FP reviewdb > /usr/local/dumps/reviewdb_default-Plain-Text-042110.dump
+ sudo -u postgres pg_dumpall > san-gerrit1/all_DBs-042110.dump
+ sudo -u postgres vacummdb -a -z
+ sudo -u postgres pgsql
+ sudo -u postgres psql
+ sudo -u postgres vacuumdb -a -z
+ cat # sudo -u postgres vacuumdb -a -z
+ grep postgres ~/.bash_history 
+ grep postgres ~/.bash_history > ~/postgres_commands.txt
+ vi ~/postgres_commands.txt
+ vi ~/postgres_commands.txt
+ cat ~/postgres_commands.txt 
+ less upgrade016_017_postgres.sql 
+ sudo -u postgres pgsql < upgrade016_017_postgres.sql 
+ sudo -u postgres psql < upgrade016_017_postgres.sql 
+ setfacl -m u:postgres:rw *
+ getfacl upgrade016_017_postgres.sql 
+ setfacl -m u:postgres:rwx ../schema-upgrades003_019
+ sudo -u postgres psql < upgrade016_017_postgres.sql 
+ sudo -u postgres psql < upgrade015_016_part1_postgres.sql 
+ sudo -u postgres psql < upgrade015_016_part2_postgres.sql 
+ sudo -u postgres psql < upgrade015_016_part2.sql 
+ sudo -u postgres psql < upgrade017_018_postgres.sql 
+ service postgresql status
+ sudo -u postgres psql < upgrade018_019_postgres.sql 
+ java -jar gerrit-2.1.2.2.war --cat pgsql/upgrade013_014_postgres.sql | psql reviewdb
+ sudo -u postgres java -jar gerrit-2.1.2.2.war --cat pgsql/upgrade013_014_postgres.sql | psql reviewdb
+ 
+ psql reviewdb < reviewdb-Modified-Plain_042110.dump
+
+ sudo -u postgres psql reviewdb < reviewdb-Modified-Plain_042110.dump
+
+

@@ -1,0 +1,83 @@
+# Needed to use postgres user due to gerrit2 rights:
+######################################################
+[root@san-gerrit1 gerrit2]# sudo -u postgres psql reviewdb < pgsql/upgrade016_017_postgres.sql 
+CREATE LANGUAGE
+CREATE FUNCTION
+ALTER TABLE
+BEGIN
+ERROR:  expected schema 16, found 14
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ROLLBACK
+[root@san-gerrit1 gerrit2]# sudo -u postgres psql reviewdb < pgsql/upgrade01
+
+# Need to start from schema 15 because found 14!!!:
+#==================================================
+[root@san-gerrit1 gerrit2]# sudo -u postgres psql reviewdb < pgsql/upgrade014_015_part1_postgres.sql 
+ALTER TABLE
+ERROR:  relation "account_patch_reviews" already exists
+ALTER TABLE
+INSERT 0 1
+INSERT 0 1
+INSERT 0 555
+DROP INDEX
+DROP INDEX
+DROP INDEX
+CREATE INDEX
+UPDATE 1
+[root@san-gerrit1 gerrit2]# sudo -u postgres psql reviewdb < pgsql/upgrade014_015_part2.sql 
+ALTER TABLE
+
+[root@san-gerrit1 gerrit2]# sudo -u postgres psql reviewdb < pgsql/upgrade014_015_part2.sql 
+ALTER TABLE
+
+[root@san-gerrit1 gerrit2]# sudo -u postgres psql reviewdb < pgsql/upgrade015_016_part1_postgres.sql 
+UPDATE 555
+DROP INDEX
+DROP INDEX
+DROP INDEX
+DELETE 0
+ALTER TABLE
+UPDATE 319
+ALTER TABLE
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "account_project_watches_pkey" for table "account_project_watches"
+ALTER TABLE
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+DELETE 0
+ALTER TABLE
+UPDATE 5322
+ALTER TABLE
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "project_rights_pkey" for table "project_rights"
+ALTER TABLE
+ALTER TABLE
+ERROR:  relation "patch_set_approvals" already exists
+ERROR:  column "patch_set_id" of relation "patch_set_approvals" already exists
+UPDATE 0
+ALTER TABLE
+ERROR:  constraint "change_approvals_pkey" does not exist
+ERROR:  constraint "change_approvals_change_open_check" does not exist
+ERROR:  multiple primary keys for table "patch_set_approvals" are not allowed
+ERROR:  constraint "patch_set_approvals_change_open_check" for relation "patch_set_approvals" already exists
+ALTER TABLE
+ALTER INDEX
+ALTER INDEX
+UPDATE 33
+UPDATE 0
+UPDATE 0
+DROP INDEX
+CREATE INDEX
+ALTER TABLE
+DROP SEQUENCE
+UPDATE 0
+UPDATE 1
+
