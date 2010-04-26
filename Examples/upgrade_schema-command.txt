@@ -81,3 +81,84 @@ DROP SEQUENCE
 UPDATE 0
 UPDATE 1
 
+UPGRADE 015_016 Part 2:
+=======================
+sudo -u postgres psql reviewdb < pgsql/upgrade015_016_part2.sql
+DROP TABLE
+DROP TABLE
+
+UPGRADE 016_017:
+================
+sudo -u postgres psql reviewdb < pgsql/upgrade016_017_postgres.sql
+ERROR:  language "plpgsql" already exists
+CREATE FUNCTION
+ERROR:  column "max_session_age" of relation "system_config" does not exist
+BEGIN
+ check_schema_version 
+----------------------
+ OK
+(1 row)
+
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+UPDATE 1689
+CREATE INDEX
+ALTER TABLE
+UPDATE 1
+COMMIT
+
+
+UPGRADE 017_018:
+================
+sudo -u postgres psql reviewdb < pgsql/upgrade017_018_postgres.sql
+BEGIN
+ check_schema_version 
+----------------------
+ OK
+(1 row)
+
+ALTER TABLE
+UPDATE 1
+UPDATE 1
+ALTER TABLE
+UPDATE 7
+UPDATE 1
+ALTER TABLE
+ALTER TABLE
+UPDATE 0
+DROP INDEX
+CREATE INDEX
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "account_external_ids_pkey" for table "account_external_ids"
+ALTER TABLE
+DROP TABLE
+UPDATE 1
+COMMIT
+
+
+UPGRADE 018_019:
+================
+sudo -u postgres psql reviewdb < pgsql/upgrade018_019_postgres.sql
+BEGIN
+ check_schema_version 
+----------------------
+ OK
+(1 row)
+
+INSERT 0 1
+UPDATE 1263
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD UNIQUE will create implicit index "account_groups_external_name_key" for table "account_groups"
+ALTER TABLE
+ALTER TABLE
+UPDATE 1
+UPDATE 1
+UPDATE 0
+UPDATE 11
+ALTER TABLE
+ALTER TABLE
+DROP TABLE
+UPDATE 1
+COMMIT
+

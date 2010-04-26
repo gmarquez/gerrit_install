@@ -99,4 +99,25 @@
 
  sudo -u postgres psql reviewdb < reviewdb-Modified-Plain_042110.dump
 
+DROP DB:
+========
+# sudo -H -u postgres dropdb reviewdb
+DROP DATABASE
+
+CREATE DB:
+==========
+# sudo -H -u postgres createdb -E UTF-8 -O gerrit2 reviewdb
+CREATE DATABASE
+
+RESTORE DB:
+===========
+ psql reviewdb < reviewdb-Modified-Plain_042110.dump
+ sudo -u postgres psql reviewdb < reviewdb-Modified-Plain_042110.dump
+
+
+APPLY A UPGRADE TO SCHEMA:
+==========================
+# sudo -u postgres psql reviewdb < pgsql/upgrade014_015_part1_postgres.sql
+
+
 
