@@ -807,4 +807,148 @@ Setup Start/Stop Gerrit Daemon:
 *Hopefully I'll get this working soon!
 =/
 
+******************************************************
+Now after doing the following:
+
+On OLD server:
+
+ - Create Dump backup of reviewdb database (2) versions
+   1. Binary dump file
+   2. Plain-text to verify and modify
+ - Modify Plain-text dump file due to username.
+   Substitue "Owner: gerrit;" for "Owner: gerrit2;"
+
+ - Since Old server schema was older, needed to Upgrade Schema to catchup to
+   gerrit v.2.1.22.
+
+  <*Insert any upgrade schema doc/stuff here>
+
+ - Resolve issue with Table owned by postgres user, rather then gerrit2
+
+
+Now run java -jar gerrit*.war init -d review_site:
+======================================================
+
+[gerrit2@san-gerrit1 ~]$ java -jar gerrit-2.1.2.2.war init -d review_site
+
+*** Gerrit Code Review 2.1.2.2
+***
+
+
+*** Git Repositories
+***
+
+Location of Git repositories   [/git/projects/git]:
+Import existing repositories   [Y/n]? Y
+
+*** SQL Database
+***
+
+Database server type           [POSTGRESQL/?]:
+Server hostname                [localhost]:
+Server port                    [(POSTGRESQL default)]:
+Database name                  [reviewdb]:
+Database username              [gerrit2]:
+Change gerrit2's password      [y/N]?
+
+*** User Authentication
+***
+
+Authentication method          [HTTP/?]:
+Get username from custom HTTP header [y/N]?
+SSO logout URL                 :
+
+*** Email Delivery
+***
+
+SMTP server hostname           [localhost]:
+SMTP server port               [(default)]:
+SMTP encryption                [NONE/?]:
+SMTP username                  :
+
+*** Container Process
+***
+
+Run as                         [gerrit2]:
+Java runtime                   [/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre]:
+Upgrade /home/gerrit2/review_site/bin/gerrit.war [Y/n]?
+Copying gerrit.war to /home/gerrit2/review_site/bin/gerrit.war
+
+*** SSH Daemon
+***
+
+Listen on address              [*]:
+Listen on port                 [29418]:
+
+*** HTTP Daemon
+***
+
+Behind reverse proxy           [Y/n]?
+Proxy uses SSL (https://)      [y/N]?
+Subdirectory on proxy server   [/]:
+Listen on address              [127.0.0.1]:
+Listen on port                 [8081]:
+
+Upgrading database schema from version 19 to 20 ...
+Upgrading database schema from version 20 to 21 ...
+Upgrading database schema from version 21 to 22 ...
+Upgrading database schema from version 22 to 23 ...
+Upgrading database schema from version 23 to 24 ...
+Upgrading database schema from version 24 to 25 ...
+Upgrading database schema from version 25 to 26 ...
+Upgrading database schema from version 26 to 27 ...
+Upgrading database schema from version 27 to 28 ...
+Upgrading database schema from version 28 to 29 ...
+Upgrading database schema from version 29 to 30 ...
+Execute the following SQL to drop unused objects:
+
+  DROP SEQUENCE project_id;
+  DROP TABLE project_rights;
+  ALTER TABLE accounts DROP COLUMN ssh_user_name;
+  ALTER TABLE account_external_ids DROP COLUMN last_used_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN stored_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN last_used_on;
+  ALTER TABLE projects DROP COLUMN project_id;
+
+Execute now [Y/n]?
+
+NEW ERRORS on DROP SEQUENCE:
+============================
+Execute the following SQL to drop unused objects:
+
+  DROP SEQUENCE project_id;
+  DROP TABLE project_rights;
+  ALTER TABLE accounts DROP COLUMN ssh_user_name;
+  ALTER TABLE account_external_ids DROP COLUMN last_used_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN stored_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN last_used_on;
+  ALTER TABLE projects DROP COLUMN project_id;
+
+Execute now [Y/n]? y
+Exception in thread "main" com.google.gwtorm.client.OrmException: Cannot apply SQL
+DROP SEQUENCE project_id
+        at com.google.gwtorm.jdbc.JdbcExecutor.execute(JdbcExecutor.java:44)
+        at com.google.gerrit.pgm.Init$SiteRun.upgradeSchema(Init.java:227)
+        at com.google.gerrit.pgm.Init.run(Init.java:85)
+        at com.google.gerrit.pgm.util.AbstractProgram.main(AbstractProgram.java:76)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:616)
+        at com.google.gerrit.launcher.GerritLauncher.invokeProgram(GerritLauncher.java:155)
+        at com.google.gerrit.launcher.GerritLauncher.mainImpl(GerritLauncher.java:89)
+        at com.google.gerrit.launcher.GerritLauncher.main(GerritLauncher.java:47)
+        at Main.main(Main.java:25)
+Caused by: org.postgresql.util.PSQLException: ERROR: must be owner of relation project_id
+        at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2062)
+        at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:1795)
+        at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:257)
+        at org.postgresql.jdbc2.AbstractJdbc2Statement.execute(AbstractJdbc2Statement.java:479)
+        at org.postgresql.jdbc2.AbstractJdbc2Statement.executeWithFlags(AbstractJdbc2Statement.java:353)
+        at org.postgresql.jdbc2.AbstractJdbc2Statement.execute(AbstractJdbc2Statement.java:345)
+        at com.google.gwtorm.jdbc.JdbcExecutor.execute(JdbcExecutor.java:42)
+        ... 11 more
+
+
+
 
