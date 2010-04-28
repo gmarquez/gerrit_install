@@ -1,0 +1,177 @@
+###############################################################################################
+# Trying something different here. I backed up reviewdb (owned by gerrit not gerrit2)         #
+# on old server. I used pgAdmin, then I changed owner to gerrit2, and priviledges set to ALL. #
+# Now starting at upgrade_014_015_part1_postgres.sql.                                         #
+###############################################################################################
+
+psql -d reviewdbtest < pgsql/upgrade014_015_part1_postgres.sql
+==============================================================
+ALTER TABLE
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "account_patch_reviews_pkey" for table "ac       count_patch_reviews"
+CREATE TABLE
+ALTER TABLE
+INSERT 0 1
+INSERT 0 1
+INSERT 0 555
+DROP INDEX
+DROP INDEX
+DROP INDEX
+CREATE INDEX
+UPDATE 1
+
+
+psql -d reviewdbtest < pgsql/upgrade014_015_part2.sql
+======================================================
+ALTER TABLE
+
+psql -d reviewdbtest < pgsql/upgrade015_016_part1_postgres.sql
+======================================================
+UPDATE 555
+DROP INDEX
+DROP INDEX
+DROP INDEX
+DELETE 0
+ALTER TABLE
+UPDATE 319
+ALTER TABLE
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "account_project_watches_pkey" for table "account_project_watches"
+ALTER TABLE
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+DELETE 0
+ALTER TABLE
+UPDATE 5322
+ALTER TABLE
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "project_rights_pkey" for table "project_rights"
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+UPDATE 6808
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "patch_set_approvals_pkey" for table "patch_set_approvals"
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER INDEX
+ALTER INDEX
+UPDATE 33
+UPDATE 0
+UPDATE 0
+DROP INDEX
+CREATE INDEX
+ALTER TABLE
+DROP SEQUENCE
+UPDATE 0
+UPDATE 1
+
+psql -d reviewdbtest < pgsql/upgrade015_016_part2.sql
+======================================================
+DROP TABLE
+DROP TABLE
+
+psql -d reviewdbtest < pgsql/upgrade016_017_postgres.sql
+========================================================
+ERROR:  must be superuser to create procedural language
+ERROR:  language "plpgsql" does not exist
+HINT:  Use CREATE LANGUAGE to load the language into the database.
+ALTER TABLE
+BEGIN
+ERROR:  function check_schema_version(integer) does not exist
+HINT:  No function matches the given name and argument types. You may need to add explicit type casts.
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ROLLBACK
+
+# Gonna need to be superuser. Robin says: "Clues are always helpful!"
+=======================================================================
+psql -U postgres -W -d reviewdbtest < pgsql/upgrade016_017_postgres.sql
+=======================================================================
+CREATE LANGUAGE
+CREATE FUNCTION
+ERROR:  column "max_session_age" of relation "system_config" does not exist
+BEGIN
+ check_schema_version 
+----------------------
+ OK
+(1 row)
+
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+UPDATE 1745
+CREATE INDEX
+ALTER TABLE
+UPDATE 1
+COMMIT
+
+psql -d reviewdbtest < pgsql/upgrade017_018_postgres.sql
+========================================================
+BEGIN
+ check_schema_version 
+----------------------
+ OK
+(1 row)
+
+ALTER TABLE
+UPDATE 1
+UPDATE 1
+ALTER TABLE
+UPDATE 7
+UPDATE 1
+ALTER TABLE
+ALTER TABLE
+UPDATE 0
+DROP INDEX
+CREATE INDEX
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "account_external_ids_pkey" for table "account_external_ids"
+ALTER TABLE
+DROP TABLE
+UPDATE 1
+COMMIT
+
+psql -d reviewdbtest < pgsql/upgrade018_019_postgres.sql
+========================================================
+BEGIN
+ check_schema_version 
+----------------------
+ OK
+(1 row)
+
+INSERT 0 1
+UPDATE 1263
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD UNIQUE will create implicit index "account_groups_external_name_key" for table "account_groups"
+ALTER TABLE
+ALTER TABLE
+UPDATE 1
+UPDATE 1
+UPDATE 0
+UPDATE 11
+ALTER TABLE
+ALTER TABLE
+DROP TABLE
+UPDATE 1
+COMMIT
+
+CHECK SCHEMA_VERSION:
+=====================
+$ psql -d reviewdbtest -c "SELECT * FROM schema_version"
+ version_nbr | singleton
+-------------+-----------
+          19 | X
+(1 row)
+
+
