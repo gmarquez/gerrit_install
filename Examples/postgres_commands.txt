@@ -120,4 +120,8 @@ APPLY A UPGRADE TO SCHEMA:
 # sudo -u postgres psql reviewdb < pgsql/upgrade014_015_part1_postgres.sql
 
 
+CHECK SCHEMA_VERSION:
+=====================
+# sudo -u postgres psql reviewdb -c "SELECT * FROM schema_version"
+
 

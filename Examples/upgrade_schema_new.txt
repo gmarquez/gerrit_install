@@ -1,0 +1,130 @@
+psql -d reviewdb < pgsql/upgrade012_013_postgres.sql 
+====================================================
+ERROR:  relation "account_group_members_audit" already exists
+ERROR:  column "automatic_membership" of relation "account_groups" already exists
+UPDATE 3
+ALTER TABLE
+ALTER TABLE
+UPDATE 1
+UPDATE 1
+ERROR:  relation "account_group_agreements" already exists
+ALTER TABLE
+ALTER TABLE
+UPDATE 1
+
+psql -d reviewdb < pgsql/upgrade013_014_postgres.sql
+====================================================
+ERROR:  column "use_signed_off_by" of relation "projects" already exists
+UPDATE 303
+ALTER TABLE
+ALTER TABLE
+UPDATE 1
+
+psql -d reviewdb < pgsql/upgrade014_015_part1_postgres.sql
+==============================================
+ERROR:  column "parent_uuid" of relation "patch_comments" already exists
+ERROR:  relation "account_patch_reviews" already exists
+ALTER TABLE
+ERROR:  duplicate key violates unique constraint "approval_categories_pkey"
+ERROR:  duplicate key violates unique constraint "approval_category_values_pkey"
+ERROR:  relation "project_rights" does not exist
+ERROR:  index "projects_ownedbygroup" does not exist
+ERROR:  index "project_rights_bycat" does not exist
+ERROR:  index "project_rights_bygroup" does not exist
+ERROR:  relation "project_rights" does not exist
+UPDATE 1
+
+psql -d reviewdb < pgsql/upgrade014_015_part2.sql
+==============================================
+ERROR:  column "owner_group_id" of relation "projects" does not exist
+
+psql -d reviewdb < pgsql/upgrade015_016_part1_postgres.sql
+==============================================
+UPDATE 0
+ERROR:  index "account_project_watches_ntcmt" does not exist
+ERROR:  index "account_project_watches_ntnew" does not exist
+ERROR:  index "account_project_watches_ntsub" does not exist
+ERROR:  column "project_id" does not exist
+ERROR:  column "project_name" of relation "account_project_watches" already exists
+ERROR:  column account_project_watches.project_id does not exist
+ALTER TABLE
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "account_project_watches_pkey" for table "account_project_watches"
+ALTER TABLE
+ERROR:  column "project_id" of relation "account_project_watches" does not exist
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+ERROR:  relation "project_rights" does not exist
+ERROR:  relation "project_rights" does not exist
+ERROR:  relation "project_rights" does not exist
+ERROR:  relation "project_rights" does not exist
+ERROR:  relation "project_rights" does not exist
+ERROR:  relation "project_rights" does not exist
+ERROR:  relation "project_rights" does not exist
+ERROR:  relation "change_approvals" does not exist
+ERROR:  column "patch_set_id" of relation "patch_set_approvals" already exists
+UPDATE 0
+ALTER TABLE
+ERROR:  constraint "change_approvals_pkey" does not exist
+ERROR:  constraint "change_approvals_change_open_check" does not exist
+ERROR:  multiple primary keys for table "patch_set_approvals" are not allowed
+ERROR:  constraint "patch_set_approvals_change_open_check" for relation "patch_set_approvals" already exists
+ALTER TABLE
+ERROR:  relation "change_approvals_closedbyuser" does not exist
+ERROR:  relation "change_approvals_openbyuser" does not exist
+ERROR:  column "ssh_user_name" does not exist
+ERROR:  column "ssh_user_name" does not exist
+ERROR:  column "ssh_user_name" does not exist
+ERROR:  index "accounts_bysshusername" does not exist
+ERROR:  column "ssh_user_name" does not exist
+ERROR:  relation "branches" does not exist
+ERROR:  sequence "branch_id" does not exist
+ERROR:  relation "project_rights" does not exist
+UPDATE 1
+
+psql -d reviewdb < pgsql/upgrade015_016_part2.sql
+=================================================
+ERROR:  table "patch_set_info" does not exist
+ERROR:  table "trusted_external_ids" does not exist
+
+psql -d reviewdb < pgsql/upgrade016_017_postgres.sql
+====================================================
+ERROR:  must be superuser to create procedural language
+ERROR:  language "plpgsql" does not exist
+HINT:  Use CREATE LANGUAGE to load the language into the database.
+ERROR:  column "max_session_age" of relation "system_config" does not exist
+BEGIN
+ERROR:  function check_schema_version(integer) does not exist
+HINT:  No function matches the given name and argument types. You may need to add explicit type casts.
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ROLLBACK
+
+* * * TRY AS postgres user: * * * 
+
+sudo -u postgres psql -d reviewdb < pgsql/upgrade016_017_postgres.sql
+=====================================================================
+CREATE LANGUAGE
+CREATE FUNCTION
+ERROR:  column "max_session_age" of relation "system_config" does not exist
+BEGIN
+ check_schema_version 
+----------------------
+ OK
+(1 row)
+
+ERROR:  column "xsrf_private_key" of relation "system_config" does not exist
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ROLLBACK
+
