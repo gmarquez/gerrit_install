@@ -1,0 +1,117 @@
+java -jar gerrit-2.1.2.3.war init -d review_site
+
+[gerrit2@san-gerrit1 ~]$ java -jar gerrit-2.1.2.3.war init -d review_site
+
+*** Gerrit Code Review 2.1.2.3
+***
+
+Create '/home/gerrit2/review_site' [Y/n]? Y
+
+*** Git Repositories
+***
+
+Location of Git repositories   [git]: /git/projects/git
+Import existing repositories   [Y/n]? Y
+
+*** SQL Database
+***
+
+Database server type           [H2/?]: ?
+       Supported options are:
+         h2
+         postgresql
+         mysql
+         jdbc
+Database server type           [H2/?]: postgresql
+Server hostname                [localhost]:
+Server port                    [(POSTGRESQL default)]:
+Database name                  [reviewdb]:
+Database username              [gerrit2]:
+gerrit2's password             :
+              confirm password :
+
+*** User Authentication
+***
+
+Authentication method          [OPENID/?]: HTTP
+Get username from custom HTTP header [y/N]?
+SSO logout URL                 :
+
+*** Email Delivery
+***
+
+SMTP server hostname           [localhost]:
+SMTP server port               [(default)]:
+SMTP encryption                [NONE/?]:
+SMTP username                  :
+
+*** Container Process
+***
+
+Run as                         [gerrit2]:
+Java runtime                   [/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre]:
+Copy gerrit.war to /home/gerrit2/review_site/bin/gerrit.war [Y/n]?
+Copying gerrit.war to /home/gerrit2/review_site/bin/gerrit.war
+
+*** SSH Daemon
+***
+
+Listen on address              [*]:
+Listen on port                 [29418]:
+
+Gerrit Code Review is not shipped with Bouncy Castle Crypto v144
+  If available, Gerrit can take advantage of features
+  in the library, but will also function without it.
+Download and install it now [Y/n]?
+Downloading http://www.bouncycastle.org/download/bcprov-jdk16-144.jar ... OK
+Checksum bcprov-jdk16-144.jar OK
+Generating SSH host key ... rsa... dsa... done
+
+*** HTTP Daemon
+***
+
+Behind reverse proxy           [y/N]?
+Use SSL (https://)             [y/N]?
+Listen on address              [*]:
+Listen on port                 [8080]:
+
+Upgrading database schema from version 19 to 20 ...
+Upgrading database schema from version 20 to 21 ...
+Upgrading database schema from version 21 to 22 ...
+Upgrading database schema from version 22 to 23 ...
+Upgrading database schema from version 23 to 24 ...
+Upgrading database schema from version 24 to 25 ...
+Upgrading database schema from version 25 to 26 ...
+Upgrading database schema from version 26 to 27 ...
+Upgrading database schema from version 27 to 28 ...
+Upgrading database schema from version 28 to 29 ...
+Upgrading database schema from version 29 to 30 ...
+Execute the following SQL to drop unused objects:
+
+  DROP SEQUENCE project_id;
+  DROP TABLE project_rights;
+  ALTER TABLE accounts DROP COLUMN ssh_user_name;
+  ALTER TABLE account_external_ids DROP COLUMN last_used_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN stored_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN last_used_on;
+  ALTER TABLE projects DROP COLUMN project_id;
+
+Execute now [Y/n]? Y
+Scanning /git/projects/git
+Exception in thread "main" java.lang.StringIndexOutOfBoundsException: String index out of range: -1
+        at java.lang.String.substring(String.java:1949)
+        at com.google.gerrit.server.git.GitProjectImporter.importProjects(GitProjectImporter.java:81)
+        at com.google.gerrit.server.git.GitProjectImporter.run(GitProjectImporter.java:59)
+        at com.google.gerrit.pgm.Init$SiteRun.importGit(Init.java:241)
+        at com.google.gerrit.pgm.Init.run(Init.java:86)
+        at com.google.gerrit.pgm.util.AbstractProgram.main(AbstractProgram.java:76)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:616)
+        at com.google.gerrit.launcher.GerritLauncher.invokeProgram(GerritLauncher.java:155)
+        at com.google.gerrit.launcher.GerritLauncher.mainImpl(GerritLauncher.java:89)
+        at com.google.gerrit.launcher.GerritLauncher.main(GerritLauncher.java:47)
+        at Main.main(Main.java:25)
+[gerrit2@san-gerrit1 ~]$
+
