@@ -1,0 +1,69 @@
+$ java -jar gerrit-2.1.2.3.war init -d review_site
+
+*** Gerrit Code Review 2.1.2.3
+***
+
+
+*** Git Repositories
+***
+
+Location of Git repositories   [/android1/android/git/]: /android1/android/
+Import existing repositories   [Y/n]? Y
+
+*** SQL Database
+***
+
+Database server type           [POSTGRESQL/?]:
+Server hostname                [localhost]:
+Server port                    [(POSTGRESQL default)]:
+Database name                  [reviewdb]:
+Database username              [gerrit2]:
+Change gerrit2's password      [y/N]?
+
+*** User Authentication
+***
+
+Authentication method          [HTTP/?]:
+Get username from custom HTTP header [y/N]?
+SSO logout URL                 :
+
+*** Email Delivery
+***
+
+SMTP server hostname           [localhost]:
+SMTP server port               [(default)]:
+SMTP encryption                [NONE/?]:
+SMTP username                  :
+
+*** Container Process
+***
+
+Run as                         [gerrit2]:
+Java runtime                   [/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre]:
+Upgrade /home/gerrit2/review_site/bin/gerrit.war [Y/n]?
+Copying gerrit.war to /home/gerrit2/review_site/bin/gerrit.war
+
+*** SSH Daemon
+***
+
+Listen on address              [*]:
+Listen on port                 [29418]:
+
+*** HTTP Daemon
+***
+
+Behind reverse proxy           [Y/n]?
+Proxy uses SSL (https://)      [y/N]?
+Subdirectory on proxy server   [/]:
+Listen on address              [127.0.0.1]:
+Listen on port                 [8081]:
+
+
+Scanning /android1/android
+Initialized /home/gerrit2/review_site
+
+# START GERRIT.SH:
+===================
+[gerrit2@san-gerrit1 ~]$ ./review_site/bin/gerrit.sh start
+Starting Gerrit Code Review: OK
+
