@@ -18,3 +18,322 @@ a production installation.  Its basically just:
 RESTORE Postgresql "reviewdb" DB:
 =================================
 
+#################################################
+
+Steps to follow for migrating Git & DB from OLD 
+Server to NEW Server, then updating Gerrit.war file.
+
+1). 'rsync' all git projects from Old to New.
+
+2). Backup reviewdb (owned by gerrit, not gerrit2) on OLD server.
+
+  *Using pgAdmin to backup just regular (compress) backup*
+   Should work with: 'sudo -u postgres pg_dump -O -Fc reviewdb > file.out'
+   
+   * After trying to restore "COMPRESS" backup, had Errors!
+   *Trying to backup now as "PLAIN, Create DB", Errors!
+   
+   *Well maybe the Error Code 1 isn't so bad. Think I got this first time too.
+   I re-created the reviewdb_NEW1 and restored reviewdb_04302010_PLAIN.backup.
+   
+   
+3). Create new reviewdb database on NEW server.
+
+   * reviewdb_new owned by gerrit (will change later)
+   
+   Properties /
+   Name: reviewdb_new
+   Owner: gerrit
+   Encoding: UTF8
+   (all defaults)
+   --------------------
+   Variables / 
+   (all defaults)
+   --------------------
+   Privileges /
+   Select "ALL"
+   --------------------
+   SQL /
+   *Not sure about Read only check?
+   Seems its checked by default.
+   ++++++++++++++++++++++++++++++
+   CREATE DATABASE reviewdb_new
+     WITH ENCODING='UTF8'
+          OWNER=gerrit
+        CONNECTION LIMIT=-1;
+   ++++++++++++++++++++++++++++++
+   
+   
+4). Attempt the RESTORE:
+
+   I re-created the reviewdb_NEW1 and restored reviewdb_04302010_PLAIN.backup.
+   Via pgAdmin restore feature, I used: reviewdb_04302010_PLAIN.backup.
+   
+   While I get errors it looks like it restored for the most part, 
+   so lets move along in the Upgrade to validate the restore.
+   
+   Now changing owner of reviewdb_NEW1 to gerrit2:
+   ALTER DATABASE "reviewdb_NEW1" OWNER TO gerrit2;
+   
+   Change ALL Sequences & Tables to be owned by gerrit2!!!
+    *** With Priviledges ALL!!! ***
+    
+ 5). Upgrade schema_version with gerrit-upgrade-scripts:
+ 
+ 	++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 	 As root: sudo -H -u gerrit2 psql -d reviewdb_NEW1 < pgsql/upgrade014_015_postgres.sql
+ 	
+ 	 # super-user:
+ 	          sudo -u postgres psql -d reviewdb_NEW1 < pgsql/upgrade016_017_postgres.sql 
+ 
+ 	 As gerrit2: psql -d reviewdb_NEW1 < pgsql/upgrade016_017_postgres.sql
+ 	++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 
+ 	* * * * * * START AT * * * * * * 
+ 	upgrade014_015_part1_postgres.sql
+ 	
+ 	### NEED SUPER-USER (postgres) FOR ###
+ 	*** upgrade016_017_postgres.sql ***
+   
+	ALL THE WAY THROUGH: upgrade018_019_postgres.sql
+	
+6). Backup for a CHECKPOINT TO HERE!!!
+
+7). Now need to change and remove the ssiafp pre-fix.
+
+	Connect to database:
+	psql -d reviewdb_NEW1 -U gerrit2
+	
+	reviewdb_NEW1=> \connect reviewdb_NEW1
+	You are now connected to database "reviewdb_NEW1".
+
+	Use these commands to change pre-fix:
+	
+	UPDATE projects SET name = SUBSTR(name, LENGTH('ssiafp/') + 1)
+	WHERE name <> (SELECT wild_project_name FROM system_config);
+	
+	ERROR:  column "wild_project_name" does not exist
+
+ACK!!!! wild_project_name doesn't EXIST!#$#!##!@#
+
+    Going to try to upgrade all the schemas with init of review_site:
+    
+    At this point rename reviewdb_NEW1 to reviewdb 
+    Or just make sure reviewdb is setup, good to connect to.
+    
+    java -jar gerrit-2.1.2.3.war init -d review_site
+    
+	Follow prompts, and at bottom should update schema up to 30:
+
+    Listen on address              [*]:
+    Listen on port                 [8080]:
+    
+    Upgrading database schema from version 19 to 20 ...
+    Upgrading database schema from version 20 to 21 ...
+    Upgrading database schema from version 21 to 22 ...
+    Upgrading database schema from version 22 to 23 ...
+    Upgrading database schema from version 23 to 24 ...
+    Upgrading database schema from version 24 to 25 ...
+    Upgrading database schema from version 25 to 26 ...
+    Upgrading database schema from version 26 to 27 ...
+    Upgrading database schema from version 27 to 28 ...
+    Upgrading database schema from version 28 to 29 ...
+    Upgrading database schema from version 29 to 30 ...
+    Execute the following SQL to drop unused objects:
+    
+      DROP SEQUENCE project_id;
+      DROP TABLE project_rights;
+      ALTER TABLE accounts DROP COLUMN ssh_user_name;
+      ALTER TABLE account_external_ids DROP COLUMN last_used_on;
+      ALTER TABLE account_ssh_keys DROP COLUMN stored_on;
+      ALTER TABLE account_ssh_keys DROP COLUMN last_used_on;
+      ALTER TABLE projects DROP COLUMN project_id;
+    
+    Execute now [Y/n]? n
+    
+    Now should be able to change pre-fix of ssiafp.
+    
+    UPDATE command returns duplicate error message WTF!?!
+    
+
+Has upgraded up to schema 30:
+=============================
+# sudo -u postgres psql reviewdb -c "SELECT * FROM schema_version"
+ version_nbr | singleton
+-------------+-----------
+          30 | X
+(1 row)
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+According to Shawn Pearch need to do some initial cleanup/removal of git projects
+we do NOT want from dump/restore. Then we can begin with the prefix ssiafp change.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Suggests:
+=========
+
+FROM SHAWN PEARCH (sop@google.com):
+===================================
+Then try removing those projects not under ssiafp first:
+
+DELETE FROM projects
+
+WHERE name <> (SELECT wild_project_name FROM system_config)
+
+AND name NOT LIKE 'ssiafp/%';
+
+
+Then prune anything else related to those projects you just removed:
+
+DELETE FROM account_project_watches WHERE
+project_name NOT IN (SELECT name FROM projects);
+
+DELETE FROM changes WHERE
+dest_project_name NOT IN (SELECT name FROM projects);
+
+DELETE FROM change_messages WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM patch_comments WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM patch_set_ancestors WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM patch_set_approvals WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM patch_sets WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM patches WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM starred_changes WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+
+-- This table might have already been removed, that's OK.
+--
+DELETE FROM patch_set_info WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+
+-- Depending on the schema version, this table may be
+-- called "ref_rights" instead:
+--
+-- NO project_rights found, use ref_rights:
+-- ========================================
+-- DELETE FROM project_rights WHERE
+DELETE FROM ref_rights WHERE
+project_name NOT IN (SELECT name FROM projects);
+
+
+> Perhaps doing this prior to attempting to change "ssiafp/" pre-fix would help.
+
+
+Right, after doing that cleanup above, then you can try to remove the prefix.
+
+
+Shawn recommended prefix change ssiafp to read gerrit.config Gerrit path:
+=========================================================================
+
+As I said earlier in this thread:
+
+UPDATE projects SET name = SUBSTR(name, LENGTH('ssiafp/') + 1)
+WHERE name <> (SELECT wild_project_name FROM system_config);
+
+
+UPDATE ref_rights SET project_name = SUBSTR(project_name, LENGTH('ssiafp/') + 1)
+WHERE project_name <> (SELECT wild_project_name FROM system_config);
+
+
+UPDATE changes SET dest_project_name = SUBSTR(dest_project_name, LENGTH('ssiafp/') + 1);
+UPDATE account_project_watches SET project_name = SUBSTR(project_name, LENGTH('ssiafp/') + 1);
+
+
+Should let you drop the 'ssiafp/' prefix.  Then just set your
+gerrit.basePath to the directory that holds the projects.
+
+
+
+COMMAND-LINE TRY:
+=================
+
+Previously this didn't work:
+============================
+[root@san-gerrit1 gerrit2]# sudo -H -u gerrit2 psql reviewdb -c "UPDATE projects SET name = SUBSTR(name,LENGTH('ssiafp/') + 1) WHERE name <> (SELECT wild_project_name FROM system_config);"
+ERROR:  duplicate key violates unique constraint "projects_pkey"
+
+[root@san-gerrit1 gerrit2]# sudo -u postgres psql reviewdb -c "UPDATE projects SET name = SUBSTR(name,LENGTH('ssiafp/') + 1) WHERE name <> (SELECT wild_project_name FROM system_config);"
+ERROR:  duplicate key violates unique constraint "projects_pkey"
+
+[root@san-gerrit1 gerrit2]# sudo -H -u gerrit2 psql reviewdb -c "UPDATE projects SET name = SUBSTR(name,LENGTH('ssiafp/') + 1);"                                       
+ERROR:  duplicate key violates unique constraint "projects_pkey"
+
+
+$ psql -d reviewdb -U gerrit2
+reviewdb=> UPDATE projects SET name = SUBSTR(name, LENGTH('ssiafp/') + 1)
+reviewdb-> WHERE name <> (SELECT wild_project_name FROM system_config);
+ERROR:  duplicate key violates unique constraint "projects_pkey"
+
+
+
+Now let's try again now that we've done some cleanup:
+=====================================================
+
+
+
+
+
+
+
+########################################################################
+ I did this again on a reviewdb_TEST1 database to try and fix some of 
+ the ssiafp prefix removal. Looks like we need to simply rename rather
+ do the removal. Also the removal of all other projects and duplicates 
+ seemed to be okay. Now just need to substitute the ssiafp to new_name
+########################################################################
+On reviewdb_TEST1:
+==================
+
+*Performed upgrade_schema from upgrade_schema.zip sql scripts.
+
+Then: 'java -jar gerrit-2.1.2.3.war init -d review_site'
+
+<truncated>
+
+# Using empty directory to NOT import any realy git repos:
+==========================================================
+* /gitrepos/ 
+
+Upgrading database schema from version 19 to 20 ...
+Upgrading database schema from version 20 to 21 ...
+Upgrading database schema from version 21 to 22 ...
+Upgrading database schema from version 22 to 23 ...
+Upgrading database schema from version 23 to 24 ...
+Upgrading database schema from version 24 to 25 ...
+Upgrading database schema from version 25 to 26 ...
+Upgrading database schema from version 26 to 27 ...
+Upgrading database schema from version 27 to 28 ...
+Upgrading database schema from version 28 to 29 ...
+Upgrading database schema from version 29 to 30 ...
+Execute the following SQL to drop unused objects:
+
+  DROP SEQUENCE project_id;
+  DROP TABLE project_rights;
+  ALTER TABLE accounts DROP COLUMN ssh_user_name;
+  ALTER TABLE account_external_ids DROP COLUMN last_used_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN stored_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN last_used_on;
+  ALTER TABLE projects DROP COLUMN project_id;
+
+Execute now [Y/n]? Y
+Initialized /home/gerrit2/review_site
+Executing /home/gerrit2/review_site/bin/gerrit.sh start
+Starting Gerrit Code Review: OK
+Waiting for server to start ... OK
+Opening browser ...
+
+
+

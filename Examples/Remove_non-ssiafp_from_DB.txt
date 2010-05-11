@@ -1,0 +1,133 @@
+DELETE NON ssiafp project from DB:
+==================================
+
+
+su gerrit2
+cd /home/gerrit2
+
+psql -d reviewdb -U gerrit2
+
+reviewdb=> DELETE FROM projects
+reviewdb-> WHERE name <> (SELECT wild_project_name FROM system_config)
+reviewdb-> AND name NOT LIKE 'ssiafp/%';
+DELETE 262
+
+
+reviewdb=> DELETE FROM account_project_watches WHERE
+reviewdb-> project_name NOT IN (SELECT name FROM projects);
+DELETE 14
+
+
+reviewdb=> DELETE FROM changes WHERE
+reviewdb-> dest_project_name NOT IN (SELECT name FROM projects);
+DELETE 340
+
+
+reviewdb=> DELETE FROM change_messages WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 940
+
+
+reviewdb=> DELETE FROM patch_comments WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 83
+
+
+reviewdb=> DELETE FROM patch_set_ancestors WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 374
+
+
+reviewdb=> DELETE FROM patch_set_approvals WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 1137
+
+reviewdb=> DELETE FROM patch_sets WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 374
+
+
+reviewdb=> DELETE FROM patches WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+ERROR:  relation "patches" does not exist
+
+
+From Shawn:
+Yea, that's OK.  We stopped caching that data in the database.  It
+cost more to write to the DB than it did to generate it on the fly.
+Just ignore that statement.  :-)
+
+***Let's move on***
+
+reviewdb=> DELETE FROM starred_changes WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 3
+
+-- ### Stopped here for reviewdb_TEST1 ###
+
+-- This table might have already been removed, that's OK.
+--
+DELETE FROM patch_set_info WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+reviewdb=> DELETE FROM patch_set_info WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+ERROR:  relation "patch_set_info" does not exist
+
+
+*** Okay moving along ***
+
+
+-- Depending on the schema version, this table may be
+-- called "ref_rights" instead:
+--
+-- NO project_rights found, use ref_rights:
+
+--DELETE FROM project_rights WHERE
+
+DELETE FROM ref_rights WHERE
+project_name NOT IN (SELECT name FROM projects);
+
+*** On reviewdb_TEST1 ***
+reviewdb_TEST1=> DELETE FROM ref_rights WHERE
+reviewdb_TEST1-> project_name NOT IN (SELECT name FROM projects);
+DELETE 1709
+
+
+*On one occasion it found something in project_right, dunno.
+*Ouch removed a lot on this one:
+
+reviewdb=> DELETE FROM project_rights WHERE
+reviewdb-> project_name NOT IN (SELECT name FROM projects);
+DELETE 1696
+
+*This one too (same amount):
+
+reviewdb=> DELETE FROM ref_rights WHERE
+reviewdb-> project_name NOT IN (SELECT name FROM projects);
+DELETE 1696
+
+NOW lets change ssiafp pre-fix:
+===============================
+
+reviewdb=> UPDATE projects SET name = SUBSTR(name, LENGTH('ssiafp/') + 1)
+reviewdb-> WHERE name <> (SELECT wild_project_name FROM system_config);
+UPDATE 293
+
+reviewdb=> UPDATE ref_rights SET project_name = SUBSTR(project_name, LENGTH('ssiafp/') + 1)
+reviewdb-> WHERE project_name <> (SELECT wild_project_name FROM system_config);
+UPDATE 3623
+
+reviewdb=> UPDATE changes SET dest_project_name = SUBSTR(dest_project_name, LENGTH('ssiafp/') + 1);
+UPDATE 1427
+
+reviewdb=> UPDATE account_project_watches SET project_name = SUBSTR(project_name, LENGTH('ssiafp/') + 1);
+UPDATE 305
+
+
+NO errors, seems okay!!!
+
+
+
+
+
