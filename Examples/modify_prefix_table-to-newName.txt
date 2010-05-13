@@ -1,0 +1,21 @@
+From Shawn Pearce reponse:
+==========================
+##########################
+# Do the following:
+##########################
+
+ UPDATE projects SET name = SUBSTR(name, LENGTH('ssiafp/') + 1)
+ WHERE name <> (SELECT wild_project_name FROM system_config);
+
+
+ UPDATE ref_rights SET project_name = SUBSTR(project_name, LENGTH('ssiafp/') + 1)
+ WHERE project_name <> (SELECT wild_project_name FROM system_config);
+
+
+ UPDATE changes SET dest_project_name = SUBSTR(dest_project_name, LENGTH('ssiafp/') + 1);
+ UPDATE account_project_watches SET project_name = SUBSTR(project_name, LENGTH('ssiafp/') + 1);
+
+
+
+Should let you drop the 'ssiafp/' prefix.  Then just set your
+gerrit.basePath to the directory that holds the projects.

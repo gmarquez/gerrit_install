@@ -1,0 +1,295 @@
+########################################################################
+ * Some of these are only-specific to my migration *
+########################################################################
+ These are the steps which have been tested 
+ and used after the following has been done:
+ ===========================================
+
+ 1. - Install/setup Postgresql 
+
+ 2. - Setup super-user postgres password
+
+ 3. - Setup gerrit2 user and gerrit user
+   (*gerrit was used on our Old server and needs to be setup*)
+ 
+ 4. - Backup the reviewdb from OLD server using "compress" option.
+
+ 5. - Drop any reviewdb on NEW server and/or CREATE new reviewdb
+
+ 6. - Restore backup of OLD server's reviewdb
+ 
+ 7. - Then change reviewdb gerrit user to gerrit2 user for:
+      * Tables owner
+      * Sequences owner
+
+ 8. - Then continue with these schema_upgrades as follows:
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ psql -d reviewdb_NEW1 < pgsql/upgrade014_015_part1_postgres.sql 
+================================================================
+ALTER TABLE
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "account_patch_reviews_pkey" for table "account_patch_reviews"
+CREATE TABLE
+ALTER TABLE
+INSERT 0 1
+INSERT 0 1
+INSERT 0 555
+DROP INDEX
+DROP INDEX
+DROP INDEX
+CREATE INDEX
+UPDATE 1
+
+psql -d reviewdb_NEW1 < pgsql/upgrade014_015_part2.sql
+===============================================================
+ALTER TABLE
+
+psql -d reviewdb_NEW1 < pgsql/upgrade015_016_part1_postgres.sql
+================================================================
+UPDATE 555
+DROP INDEX
+DROP INDEX
+DROP INDEX
+DELETE 0
+ALTER TABLE
+UPDATE 319
+ALTER TABLE
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "account_project_watches_pkey" for table "account_project_watches"
+ALTER TABLE
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+DELETE 0
+ALTER TABLE
+UPDATE 5322
+ALTER TABLE
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "project_rights_pkey" for table "project_rights"
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+UPDATE 6885
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "patch_set_approvals_pkey" for table "patch_set_approvals"
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER INDEX
+ALTER INDEX
+UPDATE 33
+UPDATE 0
+UPDATE 0
+DROP INDEX
+CREATE INDEX
+ALTER TABLE
+DROP SEQUENCE
+UPDATE 0
+UPDATE 1
+
+psql -d reviewdb_NEW1 < pgsql/upgrade015_016_part2.sql
+================================================================
+DROP TABLE
+DROP TABLE
+
+*** MUST BE SUPERUSER ***
+
+ Otherwise will recieve and error like this:
+
+psql -d reviewdb_NEW1 < pgsql/upgrade016_017_postgres.sql
+================================================================
+ERROR:  must be superuser to create procedural language
+ERROR:  language "plpgsql" does not exist
+HINT:  Use CREATE LANGUAGE to load the language into the database.
+ALTER TABLE
+BEGIN
+ERROR:  function check_schema_version(integer) does not exist
+HINT:  No function matches the given name and argument types. You may need to add explicit type casts.
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ROLLBACK
+
+*** MUST BE SUPERUSER ***
+
+# As root:
+sudo -u postgres psql reviewdb < pgsql/upgrade016_017_postgres.sql
+================================================================
+
+CREATE LANGUAGE
+CREATE FUNCTION
+ERROR:  column "max_session_age" of relation "system_config" does not exist
+BEGIN
+ check_schema_version 
+----------------------
+ OK
+(1 row)
+
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+UPDATE 1767
+CREATE INDEX
+ALTER TABLE
+UPDATE 1
+COMMIT
+
+psql -d reviewdb_NEW1 < pgsql/upgrade017_018_postgres.sql
+================================================================
+BEGIN
+ check_schema_version 
+----------------------
+ OK
+(1 row)
+
+ALTER TABLE
+UPDATE 1
+UPDATE 1
+ALTER TABLE
+UPDATE 7
+UPDATE 1
+ALTER TABLE
+ALTER TABLE
+UPDATE 0
+DROP INDEX
+CREATE INDEX
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "account_external_ids_pkey" for table "account_external_ids"
+ALTER TABLE
+DROP TABLE
+UPDATE 1
+COMMIT
+
+psql -d reviewdb_NEW1 < pgsql/upgrade018_019_postgres.sql
+================================================================
+BEGIN
+ check_schema_version 
+----------------------
+ OK
+(1 row)
+
+INSERT 0 1
+UPDATE 1263
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD UNIQUE will create implicit index "account_groups_external_name_key" for table "account_groups"
+ALTER TABLE
+ALTER TABLE
+UPDATE 1
+UPDATE 1
+UPDATE 0
+UPDATE 11
+ALTER TABLE
+ALTER TABLE
+DROP TABLE
+UPDATE 1
+COMMIT
+
+*** LETS CHECK SCHEMA_VERSION ***
+###################################
+psql -d reviewdb_NEW1 -c "SELECT * FROM schema_version"
+ version_nbr | singleton 
+-------------+-----------
+          19 | X
+(1 row)
+
+** LOOKS GOOD!!! ***
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Next we need to upgrade entire schema_version by running the main 
+  java -jar gerrit-<VERSION>.war init -d review_site
+to update the schema_version all the way to 30.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Followed by manipulating the reviewdb database to remove all the other
+non-ssiafp projects from the OLD server like:
+
+$ ls -l /git/
+=============
+ Hiro  
+ Pyramid  
+ SandboxTom  
+ TestProject  
+====================================
+ # ssiafp <== Leaving only this one. 
+====================================
+
+# STEPS INCLUDED HERE: #
+========================
+
+* * * * * * * * * * * * * * * * * * * * * 
+ See logs of these steps in: 
+  Examples/Remove_non-ssiafp_from_DB.txt
+* * * * * * * * * * * * * * * * * * * * * 
+
+Then try removing those projects not under ssiafp first:
+
+DELETE FROM projects
+WHERE name <> (SELECT wild_project_name FROM system_config)
+AND name NOT LIKE 'ssiafp/%';
+
+
+Then prune anything else related to those projects you just removed:
+
+DELETE FROM account_project_watches WHERE
+project_name NOT IN (SELECT name FROM projects);
+
+DELETE FROM changes WHERE
+dest_project_name NOT IN (SELECT name FROM projects);
+
+DELETE FROM change_messages WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM patch_comments WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM patch_set_ancestors WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM patch_set_approvals WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM patch_sets WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM patches WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM starred_changes WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+
+-- This table might have already been removed, that's OK.
+--
+DELETE FROM patch_set_info WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+
+-- Depending on the schema version, this table may be
+-- called "ref_rights" instead:
+--
+DELETE FROM project_rights WHERE
+project_name NOT IN (SELECT name FROM projects);
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Last need to change the ssiafp prefix to new name which in this
+case will become "git" and be located inside of /android1/android/git/
+
+# STEPS INCLUDED HERE: #
+========================
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
