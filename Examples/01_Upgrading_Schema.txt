@@ -295,6 +295,8 @@ Password: <password>
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+Next steps are:
+===============
 Followed by manipulating the reviewdb database to remove all the other
 non-ssiafp projects from the OLD server like:
 
@@ -316,7 +318,17 @@ $ ls -l /git/
   Examples/Remove_non-ssiafp_from_DB.txt
 * * * * * * * * * * * * * * * * * * * * * 
 
+I did these steps all within postgres after connecting
+to the reviewdb as gerrit2 user with password:
+
+# As gerrit2 user:
+------------------
+$ psql -d reviewdb
+Password: <password>
+
+
 Then try removing those projects not under ssiafp first:
+========================================================
 
 DELETE FROM projects
 WHERE name <> (SELECT wild_project_name FROM system_config)
@@ -324,6 +336,7 @@ AND name NOT LIKE 'ssiafp/%';
 
 
 Then prune anything else related to those projects you just removed:
+====================================================================
 
 DELETE FROM account_project_watches WHERE
 project_name NOT IN (SELECT name FROM projects);
@@ -349,6 +362,8 @@ change_id NOT IN (SELECT change_id FROM changes);
 DELETE FROM patches WHERE
 change_id NOT IN (SELECT change_id FROM changes);
 
+# *"ERROR: relation "patches" does not exist"* #<- this is okay.
+
 DELETE FROM starred_changes WHERE
 change_id NOT IN (SELECT change_id FROM changes);
 
@@ -358,6 +373,7 @@ change_id NOT IN (SELECT change_id FROM changes);
 DELETE FROM patch_set_info WHERE
 change_id NOT IN (SELECT change_id FROM changes);
 
+# *"ERROR:  relation "patch_set_info" does not exist"* #<- was removed.
 
 -- Depending on the schema version, this table may be
 -- called "ref_rights" instead:
@@ -371,10 +387,19 @@ project_name NOT IN (SELECT name FROM projects);
 Last need to change the ssiafp prefix to new name which in this
 case will become "git" and be located inside of /android1/android/git/
 
+I believe the requirement was to just replace the 'ssiafpi/' name to 'git/'.
+If so, we do with the following:
+
 # STEPS INCLUDED HERE: #
 ========================
 
+UPDATE projects SET name = 'git/' || SUBSTR(name, LENGTH('ssiafp/') + 1)
+WHERE name <> (SELECT wild_project_name FROM system_config);
 
+# Results:
+reviewdb=> UPDATE projects SET name = 'git/' || SUBSTR(name, LENGTH('ssiafp/') + 1)
+reviewdb-> WHERE name <> (SELECT wild_project_name FROM system_config);
+UPDATE 298
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
