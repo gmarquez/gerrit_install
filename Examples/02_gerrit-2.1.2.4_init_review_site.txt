@@ -1,0 +1,111 @@
+$ java -jar gerrit-2.1.2.4.war init -d review_site
+
+*** Gerrit Code Review 2.1.2.4
+***
+
+Create '/android1/gerrit2/review_site' [Y/n]? Y
+
+*** Git Repositories
+***
+
+Location of Git repositories   [git]: /gittemp/
+
+*** SQL Database
+***
+
+Database server type           [H2/?]: ?
+       Supported options are:
+         h2
+         postgresql
+         mysql
+         jdbc
+Database server type           [H2/?]: postgresql
+Server hostname                [localhost]:
+Server port                    [(POSTGRESQL default)]:
+Database name                  [reviewdb]:
+Database username              [gerrit2]:
+gerrit2's password             :
+              confirm password :
+
+*** User Authentication
+***
+
+Authentication method          [OPENID/?]: ?
+       Supported options are:
+         openid
+         http
+         http_ldap
+         ldap
+         ldap_bind
+         development_become_any_account
+Authentication method          [OPENID/?]: http
+Get username from custom HTTP header [y/N]?
+SSO logout URL                 :
+
+*** Email Delivery
+***
+
+SMTP server hostname           [localhost]:
+SMTP server port               [(default)]:
+SMTP encryption                [NONE/?]:
+SMTP username                  :
+
+*** Container Process
+***
+
+Run as                         [gerrit2]:
+Java runtime                   [/android1/gerrit2/jdk1.6.0_19/jre]:
+Copy gerrit.war to /android1/gerrit2/review_site/bin/gerrit.war [Y/n]?
+Copying gerrit.war to /android1/gerrit2/review_site/bin/gerrit.war
+
+*** SSH Daemon
+***
+
+Listen on address              [*]:
+Listen on port                 [29418]:
+
+Gerrit Code Review is not shipped with Bouncy Castle Crypto v144
+  If available, Gerrit can take advantage of features
+  in the library, but will also function without it.
+Download and install it now [Y/n]?
+Downloading http://www.bouncycastle.org/download/bcprov-jdk16-144.jar ... OK
+Checksum bcprov-jdk16-144.jar OK
+Generating SSH host key ... rsa... dsa... done
+
+*** HTTP Daemon
+***
+
+Behind reverse proxy           [y/N]? y
+Proxy uses SSL (https://)      [y/N]?
+Subdirectory on proxy server   [/]:
+Listen on address              [*]:
+Listen on port                 [8081]:
+
+Upgrading database schema from version 19 to 20 ...
+Upgrading database schema from version 20 to 21 ...
+Upgrading database schema from version 21 to 22 ...
+Upgrading database schema from version 22 to 23 ...
+Upgrading database schema from version 23 to 24 ...
+Upgrading database schema from version 24 to 25 ...
+Upgrading database schema from version 25 to 26 ...
+Upgrading database schema from version 26 to 27 ...
+Upgrading database schema from version 27 to 28 ...
+Upgrading database schema from version 28 to 29 ...
+Upgrading database schema from version 29 to 30 ...
+Execute the following SQL to drop unused objects:
+
+  DROP SEQUENCE project_id;
+  DROP TABLE project_rights;
+  ALTER TABLE accounts DROP COLUMN ssh_user_name;
+  ALTER TABLE account_external_ids DROP COLUMN last_used_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN stored_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN last_used_on;
+  ALTER TABLE projects DROP COLUMN project_id;
+
+Execute now [Y/n]? n
+Initialized /android1/gerrit2/review_site
+Executing /android1/gerrit2/review_site/bin/gerrit.sh start
+Starting Gerrit Code Review: OK
+Waiting for server to start ... OK
+Opening browser ...
+

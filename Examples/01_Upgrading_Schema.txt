@@ -1,5 +1,5 @@
 ########################################################################
- * Some of these are only-specific to my migration *
+     * * * These are only-specific to my migration * * *
 ########################################################################
  These are the steps which have been tested 
  and used after the following has been done:
@@ -23,6 +23,26 @@
       * Sequences owner
 
  8. - Then continue with these schema_upgrades as follows:
+
+
+*All these commands were ran as gerrit2 user, except where SU is needed.
+
+#########################################################
+  * * * * * * * * * * * * * * * * * * * * * * * * * * *  
+  reviewdb from Old server should appear to be on 
+  schema_version_number: 14 which means we need to
+  start with upgrade014_15_part1_postgres.sql script.
+  ----------------------------------------------------
+  We can check/verify the schema_version by running:
+  ====================================================
+  $ psql -d reviewdb -c "SELECT * FROM schema_version"
+  Password: <password>
+   version_nbr | singleton
+  -------------+-----------
+            14 | X
+  (1 row)
+  ----------------------------------------------------
+#########################################################
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  psql -d reviewdb_NEW1 < pgsql/upgrade014_015_part1_postgres.sql 
@@ -96,7 +116,9 @@ psql -d reviewdb_NEW1 < pgsql/upgrade015_016_part2.sql
 DROP TABLE
 DROP TABLE
 
-*** MUST BE SUPERUSER ***
+++++++++++++++++++++++++++++
+ *** MUST BE SUPERUSER ***
+++++++++++++++++++++++++++++
 
  Otherwise will recieve and error like this:
 
@@ -122,7 +144,12 @@ ROLLBACK
 
 # As root:
 sudo -u postgres psql reviewdb < pgsql/upgrade016_017_postgres.sql
-================================================================
+
+ or
+
+# As gerrit2:
+$ psql -U postgres -d reviewdb < pgsql/upgrade016_017_postgres.sql
+==================================================================
 
 CREATE LANGUAGE
 CREATE FUNCTION
@@ -206,7 +233,65 @@ psql -d reviewdb_NEW1 -c "SELECT * FROM schema_version"
 
 Next we need to upgrade entire schema_version by running the main 
   java -jar gerrit-<VERSION>.war init -d review_site
-to update the schema_version all the way to 30.
+to update the schema_version all the way to 30. 
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ For this step, I want to setup an empty git directory where
+ the init script will look to for adding for gerrit base path.
+ 
+ Do not want to use a directory that has real git repos because
+ will add them to the database and can create multiple repos with 
+ two names like ssiafp (from restore) and newly added /gitdir/ (added).
+ 
+ Therefore, I simply created empty /gittemp directory, will add
+ real official git directory where ssiafp will be rsync'd to.
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+Should look like this towards ends of prompt for gerrit init scritp:
+====================================================================
+$ java -jar gerrit-2.1.2.4.war init -d review_site
+
+*** Gerrit Code Review 2.1.2.4
+<snip>   # for complete log see: 02_gerrit-2.1.2.4_init_review_site.txt
+
+Upgrading database schema from version 19 to 20 ...
+Upgrading database schema from version 20 to 21 ...
+Upgrading database schema from version 21 to 22 ...
+Upgrading database schema from version 22 to 23 ...
+Upgrading database schema from version 23 to 24 ...
+Upgrading database schema from version 24 to 25 ...
+Upgrading database schema from version 25 to 26 ...
+Upgrading database schema from version 26 to 27 ...
+Upgrading database schema from version 27 to 28 ...
+Upgrading database schema from version 28 to 29 ...
+Upgrading database schema from version 29 to 30 ...
+Execute the following SQL to drop unused objects:
+
+  DROP SEQUENCE project_id;
+  DROP TABLE project_rights;
+  ALTER TABLE accounts DROP COLUMN ssh_user_name;
+  ALTER TABLE account_external_ids DROP COLUMN last_used_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN stored_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN last_used_on;
+  ALTER TABLE projects DROP COLUMN project_id;
+
+Execute now [Y/n]? n
+Initialized /android1/gerrit2/review_site
+Executing /android1/gerrit2/review_site/bin/gerrit.sh start
+Starting Gerrit Code Review: OK
+Waiting for server to start ... OK
+Opening browser ...
+
+*** LETS CHECK SCHEMA_VERSION AGAIN ***
+#######################################
+psql -d reviewdb -c "SELECT * FROM schema_version"
+Password: <password>
+ version_nbr | singleton
+-------------+-----------
+          30 | X
+(1 row)
+
+** LOOKS GOOD!!! ***
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
