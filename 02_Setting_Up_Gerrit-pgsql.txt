@@ -499,8 +499,12 @@ Connect to Psql DB (as root):
  \h for help
  \q to quit.
 
-# SETUP Password for postgres db user:
-=====================================
+########################################
+# SETUP Password for postgres db user: #
+########################################
+
+# Set postgres password:
+========================
 # sudo -u postgres psql
 could not change directory to "/root"
 Welcome to psql 8.1.18, the PostgreSQL interactive terminal.
