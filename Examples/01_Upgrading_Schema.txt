@@ -410,6 +410,21 @@ UPDATE 298
 
 ####################################################################################
 STILL EXPERIENCING ISSUES WHEN RUNNING 'gerrit.sh'; HAVING JAVA ERRORS:
+
+RESPONSE FROM: Ishaaq Chandy:
+	
+Is there a git repo under a ".git" directory directly under
+/android1/android/git ? If so, that would be why. You should probably
+rename it to something like "foo.git" or some such...
+
+Turns out there was a /android1/android/git/.git dir under /android1/android/git/.
+
+RENAME .git to foo.git: 
+
+ mv /android1/android/git/.git /android1/android/git/foo.git
+
+LET'S MOVE ON TO THE NEXT ONE....
+
 ####################################################################################
 
 $ java -jar gerrit-2.1.2.4.war init -d review_site
@@ -620,7 +635,7 @@ Caused by: org.postgresql.util.PSQLException: ERROR: duplicate key violates uniq
 
 
 
-  - THIS_IS_GETTING_UGLY!!! -
+  * THIS_IS_GETTING_UGLY!!! *
 
 
 
