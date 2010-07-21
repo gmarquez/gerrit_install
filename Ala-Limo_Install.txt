@@ -1,0 +1,393 @@
+$ rpm -qa | grep postgresql
+postgresql-libs-8.1.11-1.el5_1.1
+postgresql-8.1.11-1.el5_1.1
+postgresql-python-8.1.11-1.el5_1.1
+postgresql-server-8.1.11-1.el5_1.1
+
+[gmarquez@ala-limo gerrit_install]$ sudo service postgresql start
+Initializing database:                                     [  OK  ]
+Starting postgresql service:                               [  OK  ]
+
+########################################################################
+# Need to come back and set this to Start at boot later:
+# $ chkconfig --list | grep postgresql
+#  postgresql 0:off 1:off 2:off 3:off 4:off 5:off 6:off
+# 
+# $ chkconfig postgresql on
+# postgresql 0:off 1:off 2:on 3:on 4:on 5:on 6:off
+########################################################################
+sudo -u postgres createuser -A -D -P -E gerrit2
+
+Enter password for new role: 	[g3rrit2]
+Enter it again:		[g3rrit2]
+Shall the new role be allowed to create more new roles? (y/n) n
+CREATE ROLE
+
+sudo -u postgres createdb -E UTF-8 -O gerrit2 reviewdb
+CREATE DATABASE
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+Need to login to Postgresql reviewdb as gerrit2, which requires modifying
+pg_hba.conf (replace ident sameuser for "md5" or "trust":
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+$ sudo vi /var/lib/pgsql/data/pg_hba.conf
+
+Modified /var/lib/pgsql/data/pg_hba.conf
+# METHOD can be "trust", "reject", "md5", "crypt", "password",
+# in clear text; "md5" is preferred since it sends encrypted passwords.
+# old:
+#local   all         all                               ident sameuser
+#host    all         all         127.0.0.1/32          ident sameuser
+#host    all         all         ::1/128               ident sameuser
+# new:
+local   all         all                               md5
+host    all         all         127.0.0.1/32          md5
+host    all         all         ::1/128               md5
+
+Now restart postgresql:
+=======================
+$ sudo service postgresql restart
+Stopping postgresql service:                               [  OK  ]
+Starting postgresql service:                               [  OK  ]
+
+$ psql -d reviewdb -U gerrit2 -W
+Password for user gerrit2:
+Welcome to psql 8.1.11, the PostgreSQL interactive terminal.
+
+Type:  \copyright for distribution terms
+       \h for help with SQL commands
+       \? for help with psql commands
+       \g or terminate with semicolon to execute query
+       \q to quit
+
+reviewdb=> \l
+        List of databases
+   Name    |  Owner   | Encoding
+-----------+----------+----------
+ postgres  | postgres | UTF8
+ reviewdb  | gerrit2  | UTF8
+ template0 | postgres | UTF8
+ template1 | postgres | UTF8
+(4 rows)
+
+reviewdb=> \q
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+# SENDMAIL - Need to verify working or configure if not:
+Tested sending mail, but failed. 
+Had to modify the /etc/sendmail.mc file and add mail smarthost: ala-mail03.corp.ad.wrs.com
+Then m4 sendmail.mc > sendmail.cf & restart sendmail service.
+
+Then was able to get emails from ala-limo.wrs.com.
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+HTTPD - Install and/or Start:
+=============================
+rpm was already installed, need to start on ala-limo:
+
+$ sudo service httpd start
+Starting httpd:                                            [  OK  ]
+
+*Checked http://ala-limo.wrs.com for RHEL-Apache Test Page, looks good!
+
+SETUP GERRIT2 USER:
+===================
+sudo useradd -r -c 'Gerrit Code Review' -m gerrit2
+
+*I didn't setup a password, because will use 'su gerrit2' in most cases, but
+probably should later on.
+
+DOWNLOAD & SETUP GERRIT:
+========================
+
+$ sudo su gerrit2
+cd ~
+
+[gerrit2@ala-limo ~]$ pwd
+/home/gerrit2
+
+wget http://gerrit.googlecode.com/files/gerrit-2.1.2.2.war
+
+As gerrit2 user:
+----------------
+[gerrit2@ala-limo ~]$ java -jar gerrit-2.1.2.2.war init -d review_site
+fatal: Gerrit Code Review requires Java 6 or later
+       (trying to run on Java 1.5)
+
+
+Need to fix this damn java problem!!!!
+*Sawn Pearce said we can install with just the JRE, it looks like JDK is
+installed but from source on ala-limo.wrs.com. I'm not gonna try to locate
+that or pin-point who/where it's installed.
+
+######################################################
+There are 2 programs which provide 'java'.
+
+  Selection    Command
+-----------------------------------------------
+*  1           /usr/lib/jvm/jre-1.4.2-gcj/bin/java
+ + 2           /usr/java/jdk1.5.0_18/bin/java
+
+Enter to keep the current selection[+], or type selection number:2
+
+######################################################
+
+
+###############
+#  NEW STUFF:
+###############
+
+1. To Copy /git/ssiafp stuff off of OLD server onto NEW server:
+===============================================================
+ $ sudo nice 15 rsync -av gmarquez@ala-gitservices:/git/ssiafp/ /android1/android/git/
+ 
+ 
+ 
+2. Backup OLD server postgresql database (All):
+   * See Postgresql_Backup&Restore.txt for more *
+==================================================
+
+You can accomplish this by either:
+
+ Use pgAdmin and connect to ala-gitservices (with password) and backup/dump.
+ 
+or
+
+ Use command line on ala-gitservices and issue these commands to perform the dump/backup of the DB:
+ 
+ $ sudo -u postgres pg_dump -O -Fc reviewdb > ala-gitservices_reviewdb.dump1
+ 
+3. Restore database on ala-limo:
+================================
+
+ $ sudo -u postgres pg_restore -d reviewdb ala-gitservices_reviewdb.dump-072010
+ Password: psql@dmin
+ 
+ 4. Now check reviewdb database, then Properties and change gerrit user to gerrit2 user.
+ 
+ Easiest to do this with pgAdmin GUI.
+ 
+ Right-click reviewdb database and Properties:
+ 	Change Owner to gerrit2...
+ 
+ Expand Schema / Catalog / Sequences (7):
+ 	Change each sequence to gerrit2 owner individually, then select Refresh when done to verify.
+ 	
+ Expand Schema / Catalog / Tables (27):
+  	Change each sequence to gerrit2 owner individually, then select Refresh when done to verify.
+ 	
+ 
+ 4. Download the latest gerrit-<version>.war file:
+ =================================================
+ 
+  $ cd /home/gerrit2/
+  
+  $ sudo -u gerrit2 wget http://gerrit.googlecode.com/files/gerrit-2.1.3.war
+  
+ 
+ 5. Download the schema-upgrade003-019.zip if don't already have:
+ ================================================================
+   $ sudo -u gerrit2 wget http://gerrit.googlecode.com/files/schema-upgrades003_019.zip
+ 
+ 	
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+  * Using "Postgresql_Backup&Restore.txt" step 5 here now!!! *
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+CHECK/UPGRADE SCHEMA:
+=====================
+
+$ sudo -u postgres psql reviewdb -c "SELECT * FROM schema_version"
+Password:
+ version_nbr | singleton
+-------------+-----------
+          14 | X
+(1 row)
+
+
+UPGRADE SCHEMA:
+===============
+1. 
+$ sudo -u postgresql psql -d reviewdb < pgsql/upgrade014_015_part1_postgres.sql
+Password:
+ALTER TABLE
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "account_patch_reviews_pkey" for table "account_patch_reviews"
+CREATE TABLE
+ALTER TABLE
+INSERT 0 1
+INSERT 0 1
+INSERT 0 597
+DROP INDEX
+DROP INDEX
+DROP INDEX
+CREATE INDEX
+UPDATE 1
+
+
+2.
+$ sudo -u postgres psql -d reviewdb < pgsql/upgrade014_015_part2.sql
+Password:
+ALTER TABLE
+
+
+3.
+$ sudo -u postgres psql -d reviewdb < pgsql/upgrade014_015_part2.sql
+Password:
+ALTER TABLE
+[gmarquez@ala-limo gerrit2]$ sudo -u postgres psql -d reviewdb < pgsql/upgrade015_016_part1_postgres.sql
+Password:
+UPDATE 597
+DROP INDEX
+DROP INDEX
+DROP INDEX
+DELETE 0
+ALTER TABLE
+UPDATE 358
+ALTER TABLE
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "account_project_watches_pkey" for table "account_project_watches"
+ALTER TABLE
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+DELETE 0
+ALTER TABLE
+UPDATE 5869
+ALTER TABLE
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "project_rights_pkey" for table "project_rights"
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+UPDATE 8433
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "patch_set_approvals_pkey" for table "patch_set_approvals"
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER INDEX
+ALTER INDEX
+UPDATE 39
+UPDATE 0
+UPDATE 0
+DROP INDEX
+CREATE INDEX
+ALTER TABLE
+DROP SEQUENCE
+UPDATE 0
+UPDATE 1
+
+4.
+$ sudo -u postgres psql -d reviewdb < pgsql/upgrade015_016_part2.sql
+Password:
+DROP TABLE
+DROP TABLE
+
+
+5.
+$ sudo -u postgres psql -d reviewdb < pgsql/upgrade016_017_postgres.sql
+Password:
+CREATE LANGUAGE
+CREATE FUNCTION
+ALTER TABLE
+BEGIN
+ check_schema_version
+----------------------
+ OK
+(1 row)
+
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+UPDATE 2198
+CREATE INDEX
+ALTER TABLE
+UPDATE 1
+COMMIT
+
+
+6.
+$ sudo -u postgres psql -d reviewdb < pgsql/upgrade017_018_postgres.sql
+Password:
+BEGIN
+ check_schema_version
+----------------------
+ OK
+(1 row)
+
+ALTER TABLE
+UPDATE 1
+UPDATE 1
+ALTER TABLE
+UPDATE 7
+UPDATE 1
+ALTER TABLE
+ALTER TABLE
+UPDATE 0
+DROP INDEX
+CREATE INDEX
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "account_external_ids_pkey" for table "account_external_ids"
+ALTER TABLE
+DROP TABLE
+UPDATE 1
+COMMIT
+
+
+7.
+$ sudo -u postgres psql -d reviewdb < pgsql/upgrade018_019_postgres.sql
+Password:
+BEGIN
+ check_schema_version
+----------------------
+ OK
+(1 row)
+
+INSERT 0 1
+UPDATE 1389
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD UNIQUE will create implicit index "account_groups_external_name_key" for table "account_groups"
+ALTER TABLE
+ALTER TABLE
+UPDATE 1
+UPDATE 1
+UPDATE 0
+UPDATE 11
+ALTER TABLE
+ALTER TABLE
+DROP TABLE
+UPDATE 1
+COMMIT
+
+
+8. CHECK VERSION TO BE AT 19:
+=============================
+$ sudo -u postgres psql reviewdb -c "SELECT * FROM schema_version"
+Password:
+ version_nbr | singleton
+-------------+-----------
+          19 | X
+(1 row)
+
+
+
+
+
+*CHECK to make sure /android1/android/git/.git doesn't exist because it causes problems:
+
+ $ sudo mv /android1/android/git/.git /android1/android/git/foo.git
+
+
+
+
+
+
+
+
+

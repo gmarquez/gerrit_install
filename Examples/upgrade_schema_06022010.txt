@@ -1,0 +1,405 @@
+
+
+Using new gerrit-2.1.2.5.war file:
+==================================
+
+$ java -jar gerrit-2.1.2.5.war init -d review_site
+
+*** Gerrit Code Review 2.1.2.5
+***
+
+
+*** Git Repositories
+***
+
+Location of Git repositories   [/gittemp/]:
+
+*** SQL Database
+***
+
+Database server type           [POSTGRESQL/?]:
+Server hostname                [localhost]:
+Server port                    [(POSTGRESQL default)]:
+Database name                  [reviewdb]:
+Database username              [gerrit2]:
+Change gerrit2's password      [y/N]?
+
+*** User Authentication
+***
+
+Authentication method          [HTTP/?]:
+Get username from custom HTTP header [y/N]?
+SSO logout URL                 :
+
+*** Email Delivery
+***
+
+SMTP server hostname           [localhost]:
+SMTP server port               [(default)]:
+SMTP encryption                [NONE/?]:
+SMTP username                  :
+
+*** Container Process
+***
+
+Run as                         [gerrit2]:
+Java runtime                   [/android1/gerrit2/jdk1.6.0_19/jre]:
+Upgrade /android1/gerrit2/review_site/bin/gerrit.war [Y/n]?
+Copying gerrit.war to /android1/gerrit2/review_site/bin/gerrit.war
+
+*** SSH Daemon
+***
+
+Listen on address              [*]:
+Listen on port                 [29418]:
+
+*** HTTP Daemon
+***
+
+Behind reverse proxy           [Y/n]?
+Proxy uses SSL (https://)      [y/N]?
+Subdirectory on proxy server   [/]:
+Listen on address              [*]:
+Listen on port                 [8081]:
+
+Upgrading database schema from version 19 to 20 ...
+Upgrading database schema from version 20 to 21 ...
+Upgrading database schema from version 21 to 22 ...
+Upgrading database schema from version 22 to 23 ...
+Upgrading database schema from version 23 to 24 ...
+Upgrading database schema from version 24 to 25 ...
+Upgrading database schema from version 25 to 26 ...
+Upgrading database schema from version 26 to 27 ...
+Upgrading database schema from version 27 to 28 ...
+Upgrading database schema from version 28 to 29 ...
+Upgrading database schema from version 29 to 30 ...
+Execute the following SQL to drop unused objects:
+
+  DROP SEQUENCE project_id;
+  DROP TABLE project_rights;
+  ALTER TABLE accounts DROP COLUMN ssh_user_name;
+  ALTER TABLE account_external_ids DROP COLUMN last_used_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN stored_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN last_used_on;
+  ALTER TABLE projects DROP COLUMN project_id;
+
+
+Execute now [Y/n]? Y
+Initialized /android1/gerrit2/review_site
+
+
+CHECKING SCHEMA_VERSION:
+========================
+$ psql -d reviewdb -c "SELECT * FROM schema_version"
+Password:
+ version_nbr | singleton
+-------------+-----------
+          30 | X
+(1 row)
+
+
+################################################################
+ REMOVING NON-ssiafp PROJECTS & PRE-FIX name out of reviewdb:
+################################################################
+
+STEPS:
+######
+
+++++++++++++++++++++++
+$ psql -d reviewdb
+Password: <password>
+++++++++++++++++++++++
+
+Then try removing those projects not under ssiafp first:
+========================================================
+
+DELETE FROM projects
+WHERE name <> (SELECT wild_project_name FROM system_config)
+AND name NOT LIKE 'ssiafp/%';
+
+
+Then prune anything else related to those projects you just removed:
+====================================================================
+
+DELETE FROM account_project_watches WHERE
+project_name NOT IN (SELECT name FROM projects);
+
+DELETE FROM changes WHERE
+dest_project_name NOT IN (SELECT name FROM projects);
+
+DELETE FROM change_messages WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM patch_comments WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM patch_set_ancestors WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM patch_set_approvals WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM patch_sets WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+DELETE FROM patches WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+# *"ERROR: relation "patches" does not exist"* #<- this is okay.
+
+DELETE FROM starred_changes WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+
+-- This table might have already been removed, that's OK.
+--
+DELETE FROM patch_set_info WHERE
+change_id NOT IN (SELECT change_id FROM changes);
+
+# *"ERROR:  relation "patch_set_info" does not exist"* #<- was removed.
+
+-- Depending on the schema version, this table may be
+-- called "ref_rights" instead:
+--
+DELETE FROM project_rights WHERE		# <- Use ref_rights instead, doesn't exist!!!
+project_name NOT IN (SELECT name FROM projects);
+
+<or>
+
+DELETE FROM ref_rights WHERE
+project_name NOT IN (SELECT name FROM projects);
+
+
+RESULTS:
+========
+
+reviewdb=> DELETE FROM projects
+reviewdb-> WHERE name <> (SELECT wild_project_name FROM system_config)
+reviewdb-> AND name NOT LIKE 'ssiafp/%';
+DELETE 263
+
+reviewdb=> DELETE FROM account_project_watches WHERE
+reviewdb-> project_name NOT IN (SELECT name FROM projects);
+DELETE 14
+
+reviewdb=> DELETE FROM changes WHERE
+reviewdb-> dest_project_name NOT IN (SELECT name FROM projects);
+DELETE 340
+
+reviewdb=>
+reviewdb=> DELETE FROM change_messages WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 940
+
+reviewdb=> DELETE FROM patch_comments WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 83
+
+reviewdb=>
+reviewdb=> DELETE FROM patch_set_ancestors WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 374
+
+reviewdb=> DELETE FROM patch_set_approvals WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 1137
+
+reviewdb=>
+reviewdb=> DELETE FROM patch_sets WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 374
+
+reviewdb=>
+reviewdb=> DELETE FROM patches WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+ERROR:  relation "patches" does not exist
+
+reviewdb=> DELETE FROM starred_changes WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 3
+
+reviewdb=> DELETE FROM patch_set_info WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+ERROR:  relation "patch_set_info" does not exist
+reviewdb=>
+
+reviewdb=> DELETE FROM ref_rights WHERE
+reviewdb-> project_name NOT IN (SELECT name FROM projects);
+DELETE 1709
+
+
+CHANGE ssiafp to git pre-fix name:
+===================================
+
+reviewdb=> UPDATE projects SET name = 'git/' || SUBSTR(name, LENGTH('ssiafp/') + 1)
+reviewdb-> WHERE name <> (SELECT wild_project_name FROM system_config);
+UPDATE 299
+
+
+[gerrit2@ala-limo gerrit2]$ java -jar gerrit-2.1.2.5.war init -d review_site
+
+*** Gerrit Code Review 2.1.2.5
+***
+
+
+*** Git Repositories
+***
+
+Location of Git repositories   [/android1/android/git/]:
+Import existing repositories   [Y/n]? Y
+
+*** SQL Database
+***
+
+Database server type           [POSTGRESQL/?]:
+Server hostname                [localhost]:
+Server port                    [(POSTGRESQL default)]:
+Database name                  [reviewdb]:
+Database username              [gerrit2]:
+Change gerrit2's password      [y/N]?
+
+*** User Authentication
+***
+
+Authentication method          [HTTP/?]:
+Get username from custom HTTP header [y/N]?
+SSO logout URL                 :
+
+*** Email Delivery
+***
+
+SMTP server hostname           [localhost]:
+SMTP server port               [(default)]:
+SMTP encryption                [NONE/?]:
+SMTP username                  :
+
+*** Container Process
+***
+
+Run as                         [gerrit2]:
+Java runtime                   [/android1/gerrit2/jdk1.6.0_19/jre]:
+Upgrade /android1/gerrit2/review_site/bin/gerrit.war [Y/n]?
+Copying gerrit.war to /android1/gerrit2/review_site/bin/gerrit.war
+
+*** SSH Daemon
+***
+
+Listen on address              [*]:
+Listen on port                 [29418]:
+
+*** HTTP Daemon
+***
+
+Behind reverse proxy           [Y/n]?
+Proxy uses SSL (https://)      [y/N]?
+Subdirectory on proxy server   [/]:
+Listen on address              [*]:
+Listen on port                 [8081]:
+
+Scanning /android1/android/git
+Exception in thread "main" com.google.gwtorm.client.OrmDuplicateKeyException: projects
+        at com.google.gwtorm.schema.sql.DialectPostgreSQL.convertError(DialectPostgreSQL.java:53)
+        at com.google.gwtorm.jdbc.JdbcAccess.convertError(JdbcAccess.java:331)
+        at com.google.gwtorm.jdbc.JdbcAccess.doInsert(JdbcAccess.java:178)
+        at com.google.gwtorm.jdbc.JdbcAccess.doInsert(JdbcAccess.java:35)
+        at com.google.gwtorm.client.impl.AbstractAccess.insert(AbstractAccess.java:56)
+        at com.google.gerrit.server.git.GitProjectImporter.importProjects(GitProjectImporter.java:103)
+        at com.google.gerrit.server.git.GitProjectImporter.importProjects(GitProjectImporter.java:106)
+        at com.google.gerrit.server.git.GitProjectImporter.run(GitProjectImporter.java:59)
+        at com.google.gerrit.pgm.Init$SiteRun.importGit(Init.java:241)
+        at com.google.gerrit.pgm.Init.run(Init.java:86)
+        at com.google.gerrit.pgm.util.AbstractProgram.main(AbstractProgram.java:76)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at com.google.gerrit.launcher.GerritLauncher.invokeProgram(GerritLauncher.java:155)
+        at com.google.gerrit.launcher.GerritLauncher.mainImpl(GerritLauncher.java:89)
+        at com.google.gerrit.launcher.GerritLauncher.main(GerritLauncher.java:47)
+        at Main.main(Main.java:25)
+Caused by: java.sql.BatchUpdateException: Batch entry 0 INSERT INTO projects(description,use_contributor_agreements,use_signed_off_by,submit_type,name)VALUES(NULL,'N','N','M','.repo/manifests') was aborted.  Call getNextException to see the cause.
+        at org.postgresql.jdbc2.AbstractJdbc2Statement$BatchResultHandler.handleError(AbstractJdbc2Statement.java:2569)
+        at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:1796)
+        at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:407)
+        at org.postgresql.jdbc2.AbstractJdbc2Statement.executeBatch(AbstractJdbc2Statement.java:2708)
+        at com.google.gwtorm.jdbc.JdbcAccess.execute(JdbcAccess.java:293)
+        at com.google.gwtorm.jdbc.JdbcAccess.doInsert(JdbcAccess.java:171)
+        ... 16 more
+Caused by: org.postgresql.util.PSQLException: ERROR: duplicate key violates unique constraint "projects_pkey"
+        at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2062)
+        at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:1795)
+        ... 20 more
+[gerrit2@ala-limo gerrit2]$
+
+
+
+
+$ java -jar gerrit-2.1.2.5.war init -d review_site
+
+*** Gerrit Code Review 2.1.2.5
+***
+
+
+*** Git Repositories
+***
+
+Location of Git repositories   [/android1/android/git/]:
+Import existing repositories   [Y/n]? Y
+
+*** SQL Database
+***
+
+Database server type           [POSTGRESQL/?]:
+Server hostname                [localhost]:
+Server port                    [(POSTGRESQL default)]:
+Database name                  [reviewdb]:
+Database username              [gerrit2]:
+Change gerrit2's password      [y/N]? y
+gerrit2's password             :
+              confirm password :
+
+*** User Authentication
+***
+
+Authentication method          [HTTP/?]:
+Get username from custom HTTP header [y/N]?
+SSO logout URL                 :
+
+*** Email Delivery
+***
+
+SMTP server hostname           [localhost]:
+SMTP server port               [(default)]:
+SMTP encryption                [NONE/?]:
+SMTP username                  :
+
+*** Container Process
+***
+
+Run as                         [gerrit2]:
+Java runtime                   [/android1/gerrit2/jdk1.6.0_19/jre]:
+Upgrade /android1/gerrit2/review_site/bin/gerrit.war [Y/n]?
+Copying gerrit.war to /android1/gerrit2/review_site/bin/gerrit.war
+
+*** SSH Daemon
+***
+
+Listen on address              [*]:
+Listen on port                 [29418]:
+
+*** HTTP Daemon
+***
+
+Behind reverse proxy           [Y/n]?
+Proxy uses SSL (https://)      [y/N]?
+Subdirectory on proxy server   [/]:
+Listen on address              [*]:
+Listen on port                 [8081]:
+
+Scanning /android1/android/git
+Initialized /android1/gerrit2/review_site
+[gerrit2@ala-limo gerrit2]$
+
+
+
+

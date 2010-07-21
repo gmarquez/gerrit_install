@@ -1,0 +1,971 @@
+INSTALLING GERRIT
+
+Resources:
+==========
+HowTo Install Java on CentOS 4 and CentOS 5-
+http://wiki.centos.org/HowTos/JavaOnCentOS
+
+Installing Jetty RPMs-
+http://docs.codehaus.org/display/JETTY/Installing+Jetty+RPMs
+
+Maven-Jetty Mirrors (check for latest jetty RPM packages):
+http://mirrors.ibiblio.org/pub/mirrors/maven/jetty/
+
+ *As of 04-05-10 latest is 6.1.18:
+ http://mirrors.ibiblio.org/pub/mirrors/maven/jetty/jetty-6.1.18/rpms/jetty-6.1.18-rpms.tar.gz
+===============================================================================
+JAVA JDK-
+Install JDK from Java-Sun (required for Maven)-
+
+*CentOS is installed with:
+java-1.6.0-openjdk-1.6.0.0-1.7.b09.el5   # <--Remove.
+java-1.4.2-gcj-compat-1.4.2.0-40jpp.115
+
+I had issues with the openjdk or possibly just user error, 
+but was able to uninstall it and install a newer JDK from 
+Java Archive page and also need Java Compiler so needed to do it anyways.
+
+rpm -e java-1.6.0-openjdk-1.6.0.0-1.7.b09.el5
+
+ *Found java-<ver>-openjdk this may be needed or need to be installed 
+  due to required dependancy issue for installing ant.
+
+Click on Java Archive page: http://java.sun.com/products/archive/
+
+Select the JDK/JRE-6 with the latest version (6 Update 18 - as of 040610) and click Go.
+Next page select the JDK 6u18  includes the JVM technology (NOT THE JRE), click on 
+Download JDK link.
+Select Linux for Platform and click Continue (No need to register, unless you want to).
+Click on the jdk-6u18-linux-i586-rpm.bin and select Save File.
+Make it executable:
+chmod +x jdk-6u18-linux-i586-rpm.bin 
+
+ls -l jdk-6u18-linux-i586-rpm.bin 
+-rwxr-xr-x 1 root root 80314190 Apr  6 22:20 jdk-6u18-linux-i586-rpm.bin
+
+Now run the jdk-installer:
+./jdk-6u18-linux-i586-rpm.bin
+
+Type "yes" to agree to license terms and to continue:
+-----------------------------------------------------------------------------
+Do you agree to the above license terms? [yes or no]
+yes
+Unpacking...
+Checksumming...
+Extracting...
+UnZipSFX 5.50 of 17 February 2002, by Info-ZIP (Zip-Bugs@lists.wku.edu).
+  inflating: jdk-6u18-linux-i586.rpm  
+  inflating: sun-javadb-common-10.5.3-0.2.i386.rpm  
+  inflating: sun-javadb-core-10.5.3-0.2.i386.rpm  
+  inflating: sun-javadb-client-10.5.3-0.2.i386.rpm  
+  inflating: sun-javadb-demo-10.5.3-0.2.i386.rpm  
+  inflating: sun-javadb-docs-10.5.3-0.2.i386.rpm  
+  inflating: sun-javadb-javadoc-10.5.3-0.2.i386.rpm  
+Preparing...                ##################################################
+jdk                         ##################################################
+Unpacking JAR files...
+        rt.jar...
+        jsse.jar...
+        charsets.jar...
+        tools.jar...
+        localedata.jar...
+        plugin.jar...
+        javaws.jar...
+        deploy.jar...
+Installing JavaDB
+Preparing...                ##################################################
+sun-javadb-common           ##################################################
+sun-javadb-core             ##################################################
+sun-javadb-client           ##################################################
+sun-javadb-demo             ##################################################
+sun-javadb-docs             ##################################################
+sun-javadb-javadoc          ##################################################
+
+Java(TM) SE Development Kit 6 successfully installed.
+
+Product Registration is FREE and includes many benefits:
+* Notification of new versions, patches, and updates
+* Special offers on Sun products, services and training
+* Access to early releases and documentation
+
+Product and system data will be collected. If your configuration
+supports a browser, the Sun Product Registration form for 
+the JDK will be presented. If you do not register, none of
+this information will be saved. You may also register your
+JDK later by opening the register.html file (located in 
+the JDK installation directory) in a browser.
+
+For more information on what data Registration collects and 
+how it is managed and used, see:
+http://java.sun.com/javase/registration/JDKRegistrationPrivacy.html
+
+Press Enter to continue.....
+Done.
+-----------------------------------------------------------------------------
+Web browser should take you to a registration page, I closed.
+
+This installs java and javac under /usr/java/default/bin/. 
+
+Modify alternatives for java and javac-
+
+Check/Update alternatives java:
+===============================
+Type:
+alternatives --config java
+==========================
+
+There is 1 program that provides 'java'.
+
+  Selection    Command
+-----------------------------------------------
+*+ 1           /usr/lib/jvm/jre-1.4.2-gcj/bin/java
+
+Enter to keep the current selection[+], or type selection number: [Enter]
+
+Add new java location into alternatives:
+*Can use 'update-alternatives' or 'alternatives' (both use alternatives).
+
+alternatives --install /usr/bin/java java /usr/java/default/bin/java 2
+
+Now we're going to use the added java:
+alternatives --config java
+alternatives --config java
+
+There are 2 programs which provide 'java'.
+
+  Selection    Command
+-----------------------------------------------
+*+ 1           /usr/lib/jvm/jre-1.4.2-gcj/bin/java
+   2           /usr/java/default/bin/java
+
+Enter to keep the current selection[+], or type selection number: [2 + Enter] 
+
+Can check to see if it now has a "+" on number 2:
+=================================================
+There are 2 programs which provide 'java'.
+
+  Selection    Command
+-----------------------------------------------
+*  1           /usr/lib/jvm/jre-1.4.2-gcj/bin/java
+ + 2           /usr/java/default/bin/java
+
+Enter to keep the current selection[+], or type selection number: [Enter]
+Looks good!
+
+Now type: java -version
+=======================
+java version "1.6.0_18"
+Java(TM) SE Runtime Environment (build 1.6.0_18-b07)
+Java HotSpot(TM) Client VM (build 16.0-b13, mixed mode, sharing)
+
+Type: javac -version
+====================
+javac 1.6.0_18
+
+######################################################
+-----------
+MAVEN-
+Maven (mvn) is needed as part of the jetty installation.
+Maven-Apache Download-Install-
+http://maven.apache.org/download.html
+
+Check one of the Apache Download Mirrors by clicking on the apache-maven-2.2.1-bin.tar.gz link and download or use wget with link.
+
+mkdir /usr/local/apache-maven
+cd /usr/local/apache-maven/
+wget http://mirrors.axint.net/apache/maven/binaries/apache-maven-2.2.1-bin.tar.gz
+
+tar -xvzf apache-maven-2.2.1-bin.tar.gz 
+Can delete tgz now:
+rm -f apache-maven-2.2.1-bin.tar.gz 
+
+######################################################
+
+*USE: 03_Set_Environment.txt now and should get expected results
+prior to continuing.
+
+######################################################
+
+Download and install Jetty6 RPM tgz file here...
+Jetty Website: 
+ http://docs.codehaus.org/display/JETTY/Jetty+Wiki
+
+Jetty Downloads:
+ http://docs.codehaus.org/display/JETTY/Downloading+Jetty
+
+Linux Distro RPMs:
+ http://docs.codehaus.org/display/JETTY/Using+the+Jetty+RPMs
+
+We already have 1 (java) of 2 (ant) prerequisites for Installing Jetty6:
+Follow this page:
+ http://docs.codehaus.org/display/JETTY/Installing+Jetty+RPMs#InstallingJettyRPMs-prerequisits
+
+Use Yum to install ant:
+cd /etc/yum.repos.d
+wget http://jpackage.org/jpackage.repo
+
+yum install ant; 
+
+Issue: yum wants to install java-openjdk and java-openjdk-devel but I have 
+JDK installed already, dont want to install another java JDK! Open-jdk caused
+issues last time I tried to use it.
+
+SO trying to download just ant RPM and install:
+wget http://mirrors.dotsrc.org/jpackage/1.7/generic/free/RPMS/ant-1.6.5-4jpp.noarch.rpm
+
+rpm -ivh ant-1.6.5-4jpp.noarch.rpm
+
+error: Failed dependencies:
+        java-devel is needed by ant-1.6.5-4jpp.noarch
+ DAMN!$@#@!!!
+
+Anyway download jetty6 RPM tar file from one of the mirrors:
+(Check for latest version then download)
+ http://mirrors.ibiblio.org/pub/mirrors/maven/jetty/
+
+Latest:  jetty-6.1.18/ 19-May-2009 10:38
+
+wget http://mirrors.ibiblio.org/pub/mirrors/maven/jetty/jetty-6.1.18/rpms/jetty-6.1.18-rpms.tar.gz
+
+Also manually get other Jetty6 dependencies because yum find
+much older versions:
+
+wget http://mirrors.dotsrc.org/jpackage/1.7/generic/free/RPMS/ant-1.6.5-4jpp.noarch.rpm
+wget http://mirrors.dotsrc.org/jpackage/1.7/generic/free/RPMS/crimson-1.1.3-17jpp.noarch.rpm
+wget http://mirrors.dotsrc.org/jpackage/1.7/generic/free/RPMS/xml-commons-1.3.03-11jpp.noarch.rpm
+wget http://mirrors.dotsrc.org/jpackage/1.7/generic/free/RPMS/xml-commons-jaxp-1.1-apis-1.3.03-11jpp.noarch.rpm
+wget http://mirrors.dotsrc.org/jpackage/1.7/generic/free/RPMS/mx4j-3.0.1-7jpp.noarch.rpm
+
+Downloaded:
+ant-1.6.5-4jpp.noarch.rpm
+crimson-1.1.3-17jpp.noarch.rpm
+mx4j-3.0.1-7jpp.noarch.rpm
+xml-commons-1.3.03-11jpp.noarch.rpm
+xml-commons-jaxp-1.1-apis-1.3.03-11jpp.noarch.rpm
+
+============================================================================
+# INSTALL DEPENDENCIES:
+============================================================================
+rpm -ivh crimson-1.1.3-17jpp.noarch.rpm 
+warning: crimson-1.1.3-17jpp.noarch.rpm: Header V3 DSA signature: NOKEY, key ID c431416d
+Preparing...                ########################################### [100%]
+   1:crimson                ########################################### [100%]
+
+rpm -ivh mx4j-3.0.1-7jpp.noarch.rpm 
+warning: mx4j-3.0.1-7jpp.noarch.rpm: Header V3 DSA signature: NOKEY, key ID c431416d
+error: Failed dependencies:
+        bcel >= 0:5.0 is needed by mx4j-3.0.1-7jpp.noarch
+        jaf is needed by mx4j-3.0.1-7jpp.noarch
+        jakarta-commons-logging >= 0:1.0.1 is needed by mx4j-3.0.1-7jpp.noarch
+        javamail >= 0:1.2-5jpp is needed by mx4j-3.0.1-7jpp.noarch
+        log4j >= 0:1.2.7 is needed by mx4j-3.0.1-7jpp.noarch
+
+
+# yum install mx4j
+Dependencies Resolved
+
+Installed:
+  mx4j.i386 1:3.0.1-6jpp.4
+
+Dependency Installed:
+  axis.i386 0:1.2.1-2jpp.6
+  bcel.i386 0:5.1-8jpp.1
+  classpathx-jaf.i386 0:1.0-9jpp.1
+  classpathx-mail.i386 0:1.1.1-4jpp.2
+  jakarta-commons-discovery.i386 1:0.3-4jpp.1
+  jakarta-commons-httpclient.i386 1:3.0-7jpp.1
+  jakarta-commons-logging.i386 0:1.0.4-6jpp.1
+  log4j.i386 0:1.2.13-3jpp.2
+  regexp.i386 0:1.4-2jpp.2
+  wsdl4j.i386 0:1.5.2-4jpp.1
+
+Complete!
+
+# yum install ant
+
+Installed:
+  ant.i386 0:1.6.5-2jpp.2
+Dependency Installed:
+  java-1.6.0-openjdk.i386 1:1.6.0.0-1.7.b09.el5
+  java-1.6.0-openjdk-devel.i386 1:1.6.0.0-1.7.b09.el5
+
+Complete!
+
+Last one to install is xml-commons-jaxp-1.1-apis-1.3.03011jpp:
+
+# rpm -Uvh xml-commons-jaxp-1.1-apis-1.3.03-11jpp.noarch.rpm 
+warning: xml-commons-jaxp-1.1-apis-1.3.03-11jpp.noarch.rpm: Header V3 DSA signature: NOKEY, key ID c431416d
+error: Failed dependencies:
+        xml-commons = 0:1.3.03-11jpp is needed by xml-commons-jaxp-1.1-apis-1.3.03-11jpp.noarch
+
+XML-COMMONS errors, currently installed:
+# rpm -qa | grep xml-commons-
+xml-commons-1.3.02-0.b2.7jpp.10
+xml-commons-resolver-1.1-1jpp.12
+xml-commons-apis-1.3.02-0.b2.7jpp.10
+
+
+# rpm -e xml-commons-1.3.02-0.b2.7jpp.10 xml-commons-resolver-1.1-1jpp.12 xml-commons-apis-1.3.02-0.b2.7jpp.10
+error: Failed dependencies:
+        xml-commons is needed by (installed) mx4j-3.0.1-6jpp.4.i386
+        xml-commons-resolver >= 1.1 is needed by (installed) xerces-j2-2.7.1-7jpp.2.el5_4.2.i386
+        xml-commons-resolver is needed by (installed) mx4j-3.0.1-6jpp.4.i386
+
+wget http://candrews.integralblue.com/wp-content/uploads/2009/07/jpackage-utils-compat-el5-0.0.1-1.noarch.rpm
+# rpm -ibh jpackage-utils-compat-el5-0.0.1-1.noarch.rpm
+(still no resolve!)
+
+# rpm -e --nodeps xml-commons-apis
+# yum upgrade
+
+*Now works!!! Seems xml-commons-apis breaks everything!!!
+RESULTS:
+========
+Installed:
+  xml-commons-resolver10.noarch 0:1.3.03-11jpp
+  xml-commons-resolver11.noarch 0:1.3.03-11jpp
+  xml-commons-resolver12.noarch 0:1.3.03-11jpp
+
+Dependency Installed:
+  avalon-framework.i386 0:4.1.4-2jpp.13
+  avalon-logkit.i386 0:1.2-4jpp.3
+  geronimo-specs.i386 0:1.0-0.M2.2jpp.12.el5.centos
+  geronimo-specs-compat.i386 0:1.0-0.M2.2jpp.12.el5.centos
+  jakarta-commons-collections.i386 0:3.2-2jpp.3
+  jakarta-oro.i386 0:2.0.8-3jpp.1
+  jdom.i386 0:1.0-4jpp.1
+  velocity.i386 0:1.4-6jpp.1
+  werken-xpath.i386 0:0.9.4-0.beta.12jpp.1
+  xml-commons-jaxp-1.3-apis.noarch 0:1.3.03-11jpp
+
+Updated:
+  ant.noarch 0:1.6.5-4jpp
+  antlr.noarch 0:2.7.7-1jpp
+  axis.noarch 0:1.4-2jpp
+  bcel.noarch 0:5.2-3jpp
+  bsf.noarch 0:2.4.0-1jpp
+  bsh.noarch 0:1.3.0-11jpp
+  classpathx-jaf.noarch 0:1.0-10jpp
+  jakarta-commons-discovery.noarch 1:0.4-2jpp
+  jakarta-commons-httpclient.noarch 1:3.0.1-1jpp
+  jakarta-commons-logging.noarch 0:1.1-4jpp
+  jpackage-utils.noarch 0:1.7.5-1jpp
+  log4j.noarch 0:1.2.14-3jpp
+  regexp.noarch 0:1.4-3jpp
+  tomcat5-jsp-2.0-api.noarch 0:5.5.25-1jpp
+  tomcat5-servlet-2.4-api.noarch 0:5.5.25-1jpp
+  wsdl4j.noarch 0:1.6.2-2jpp
+  xalan-j2.noarch 0:2.7.0-7jpp
+  xerces-j2.noarch 0:2.9.0-2jpp
+  xml-commons.noarch 0:1.3.03-11jpp
+
+Replaced:
+  xml-commons-resolver.i386 0:1.1-1jpp.12
+
+Complete!
+
+# rpm -ivh xml-commons-jaxp-1.1-apis-1.3.03-11jpp.noarch.rpm 
+Preparing...                ########################################### [100%]
+   1:xml-commons-jaxp-1.1-ap########################################### [100%]
+
+# yum update 
+ Failing again, Error: Missing Dependencies...
+
+# rpm -qa | grep apis
+xml-commons-jaxp-1.1-apis-1.3.03-11jpp
+xml-commons-jaxp-1.3-apis-1.3.03-11jpp
+# rpm -e --nodeps xml-commons-apis
+error: package xml-commons-apis is not installed
+# rpm -e --nodeps xml-commons-jaxp
+error: package xml-commons-jaxp is not installed
+# rpm -e --nodeps xml-commons-jaxp-1.1-apis
+# rpm -e --nodeps xml-commons-jaxp-1.3-apis
+# rpm -qa | grep apis
+none!!!
+
+# yum update 
+
+Now errors about Error: Missing depends.. geronimo-specs, so:
+
+# yum erase geronimo-specs-compat
+
+Removed:
+  geronimo-specs-compat.i386 0:1.0-0.M2.2jpp.12.el5.centos
+
+Dependency Removed:
+  avalon-logkit.i386 0:1.2-4jpp.3
+  bsf.noarch 0:2.4.0-1jpp
+  bsh.noarch 0:1.3.0-11jpp
+  openoffice.org-calc.i386 1:2.3.0-6.11.el5_4.4
+  openoffice.org-core.i386 1:2.3.0-6.11.el5_4.4
+  openoffice.org-draw.i386 1:2.3.0-6.11.el5_4.4
+  openoffice.org-graphicfilter.i386 1:2.3.0-6.11.el5_4.4
+  openoffice.org-impress.i386 1:2.3.0-6.11.el5_4.4
+  openoffice.org-math.i386 1:2.3.0-6.11.el5_4.4
+  openoffice.org-writer.i386 1:2.3.0-6.11.el5_4.4
+  openoffice.org-xsltfilter.i386 1:2.3.0-6.11.el5_4.4
+  velocity.i386 0:1.4-6jpp.1
+Complete!
+
+# yum update
+
+Now seems to be working again!!!!
+============================================================================
+
+Complete Install of Jetty6 RPMS:
+
+# rpm -ivh :
+
+jetty6-6.1.18-1jpp.noarch.rpm
+jetty6-core-6.1.18-1jpp.noarch.rpm
+jetty6-jsp-2.1-6.1.18-1jpp.noarch.rpm
+jetty6-plus-6.1.18-1jpp.noarch.rpm
+jetty6-servlet-2.5-api-6.1.18-1jpp.noarch.rpm
+# optional
+jetty6-javadoc-6.1.18-1jpp.noarch.rpm
+jetty6-demos-6.1.18-1jpp.noarch.rpm
+
+Preparing...                ########################################### [100%]
+   1:jetty6-servlet-2.5-api ########################################### [ 20%]
+   2:jetty6-core            ########################################### [ 40%]
+   3:jetty6                 ########################################### [ 60%]
+   4:jetty6-jsp-2.1         ########################################### [ 80%]
+   5:jetty6-plus            ########################################### [100%]
+
+Enable Jetty6 for Startup-
+==========================
+
+chkconfig --list | grep jetty6
+
+If not listed: 
+ chkconfig --add jetty6
+
+If not enabled/on: 
+ chkconfig jetty6 on
+
+Check:
+jetty6          0:off   1:off   2:off   3:on    4:off   5:off   6:off
+
+#########################################################################
+Actually up to this point, most of these steps should NOT be necessary.
+
+At this point prior to installing Postgresql here's what you need:
+
+- Install/setup Git
+
+- Setup gerrit2 user on system
+
+- Download latest gerrit-<version>.war file from
+  http://code.google.com/p/gerrit/downloads/list
+  
+- Check some basic requirements like:
+  disk space
+  java -version
+  javac -version
+
+- Install Apache2/HTTPD
+
+- Setup git repos 
+
+- Install/setup Postgresql  
+
+
+#########################################################################
+
+INSTALL & SETUP POSTGRESQL:
+===========================
+
+yum install postgresql postgresql-server postgresql-libs postgresql-devel
+service postgresql start 
+ or
+/etc/init.d/postgresql start
+
+Set PostgreSQL to start on boot:
+--------------------------------
+
+chkconfig --list | grep postgresql
+postgresql      0:off   1:off   2:off   3:off   4:off   5:off   6:off
+
+chkconfig postgresql on
+postgresql      0:off   1:off   2:on    3:on    4:on    5:on    6:off
+
+service postgresql start
+ Initializing database:                                     [  OK  ]
+ Starting postgresql service:                               [  OK  ]
+
+Connect to Psql DB (as root):
+# sudo -u postgres psql
+ \l to list databases
+ \h for help
+ \q to quit.
+
+########################################
+# SETUP Password for postgres db user: #
+########################################
+
+# Set postgres password:
+========================
+# sudo -u postgres psql
+could not change directory to "/root"
+Welcome to psql 8.1.18, the PostgreSQL interactive terminal.
+
+Type:  \copyright for distribution terms
+       \h for help with SQL commands
+       \? for help with psql commands
+       \g or terminate with semicolon to execute query
+       \q to quit
+
+postgres=# alter user postgres with password 'psql@dmin';
+ALTER ROLE
+postgres=# \q
+
+++++++++++++++++++++
+User: postgres
+Password: psql@dmin
+++++++++++++++++++++
+
+Create "gerrit2" user in Postgresql:
+===================================
+Use: sudo -u postgres createuser -A -D -P -E gerrit2
+ createuser [ option... ]  [ username ]
+  Options:
+ -A -  Couldn't find any -A option but didn't complain about using it.
+ -D | --no-createdb - User not allowed to create databases.
+ -P | --pwprompt - Prompt for password of the new user.
+ -E | --encrypted - Encrypts the user's password in the database.
+
+# sudo -u postgres createuser -A -D -P -E gerrit2
+Enter password for new role: g3rrit2
+Enter it again: g3rrit2
+Shall the new role be allowed to create more new roles? (y/n) n
+CREATE ROLE
+
+Create "reviewdb" DB in Postgresql:
+===================================
+Use: sudo -u postgres createdb -E UTF-8 -O gerrit2 reviewdb
+ createdb [ option... ]  [ dbname ]  [ description ]
+  Options:
+ -E | --encoding - Specify the character encoding scheme to be used in database.
+ -O | --owner - Database user who will own the new database.
+
+# sudo -u postgres createdb -E UTF-8 -O gerrit2 reviewdb
+CREATE DATABASE
+
+Should Test login as gerrit2 to pgsql DB reviewdb:
+==================================================
+$ psql -d reviewdb -U gerrit2 -W  (-W to prompt for password)
+
+I had issues at first, needed to change pg_hba.conf and resart postgresql:
+#################################################################
+# psql -U gerrit2 -d reviewdb
+# psql: FATAL:  Ident authentication failed for user "gerrit2"
+#################################################################
+WORKAROUND/SOLUTION:
+*Change ident sameuser to either md5 or trust.
+
+Edit /var/lib/pgsql/data/pg_hba.conf 
+===========================================================
+local   all         all                               trust
+host    all         all         127.0.0.1/32          trust
+host    all         all         ::1/128               trust
+
+# service postgresql restart
+ Stopping postgresql service:                               [  OK  ]
+ Starting postgresql service:                               [  OK  ]
+
+#################################################################
+
+RE-TRY:
+=======
+# psql -d reviewdb -U gerrit2 -W
+Password for user gerrit2: [g3rrit2]
+Welcome to psql 8.1.18, the PostgreSQL interactive terminal.
+
+Type:  \copyright for distribution terms
+       \h for help with SQL commands
+       \? for help with psql commands
+       \g or terminate with semicolon to execute query
+       \q to quit
+
+reviewdb=> \q
+
+CREATE GERRIT2 USER:
+====================
+# Copy and input this:
+useradd \
+-r \
+-s /bin/sh \
+-c 'Gerrit Code Review' \
+-m \
+gerrit2
+
+ or:
+
+useradd -r -s /bin/sh -c 'Gerrit Code Review' -m gerrit2
+
+
+DOWNLOAD & SETUP GERRIT:
+========================
+Check http://code.google.com/p/gerrit/ for latest software version & docs.
+
+*Current version is gerrit-2.1.2.2.war.
+*Should be setup as gerrit2 user in /home/gerrit2 (according to docs).
+
+COMMANDS:
+=========
+su gerrit2
+cd /home/gerrit2/
+
+wget http://gerrit.googlecode.com/files/gerrit-2.1.2.2.war
+
+Initialize the reviewdb site:
+=============================
+java -jar gerrit-2.1.2.2.war init -d review_site
+
+*You may need to reset your enviroment from script we created:
+$source 03_Set_Env.sh 
+
+*This will prompt through a series of questions.
+
+============================================================================
+INIT_REVIEWDB.LOG:
+============================================================================
+
+*** Gerrit Code Review 2.1.2.2
+*** 
+
+Create '/home/gerrit2/review_site' [Y/n]? Y
+
+*** Git Repositories
+*** 
+
+Location of Git repositories   [git]: /git/projects
+Import existing repositories   [Y/n]? Y
+
+*** SQL Database
+*** 
+
+Database server type           [H2/?]: ?
+       Supported options are:
+         h2
+         postgresql
+         mysql
+         jdbc
+Database server type           [H2/?]: postgresql
+Server hostname                [localhost]: 
+Server port                    [(POSTGRESQL default)]: 
+Database name                  [reviewdb]: 
+Database username              [gerrit2]: 
+gerrit2's password             : 
+              confirm password : 
+
+*** User Authentication
+*** 
+
+Authentication method          [OPENID/?]: HTTP
+Get username from custom HTTP header [y/N]? 
+SSO logout URL                 : 
+
+*** Email Delivery
+*** 
+
+SMTP server hostname           [localhost]:
+SMTP server port               [(default)]: 
+SMTP encryption                [NONE/?]: 
+SMTP username                  : 
+
+*** Container Process
+*** 
+
+Run as                         [gerrit2]: 
+Java runtime                   [/usr/java/jdk1.6.0_18/jre]: 
+Copy gerrit.war to /home/gerrit2/review_site/bin/gerrit.war [Y/n]? Y
+Copying gerrit.war to /home/gerrit2/review_site/bin/gerrit.war
+
+*** SSH Daemon
+*** 
+
+Listen on address              [*]: 
+Listen on port                 [29418]: 
+
+Gerrit Code Review is not shipped with Bouncy Castle Crypto v144
+  If available, Gerrit can take advantage of features
+  in the library, but will also function without it.
+Download and install it now [Y/n]? Y
+Downloading http://www.bouncycastle.org/download/bcprov-jdk16-144.jar ... OK
+Checksum bcprov-jdk16-144.jar OK
+Generating SSH host key ... rsa... dsa... done
+
+*** HTTP Daemon
+*** 
+
+Behind reverse proxy           [y/N]?  
+Use SSL (https://)             [y/N]? 
+Listen on address              [*]: 
+Listen on port                 [8080]: 
+
+Scanning /git/projects/git
+Scanning /git/projects
+Initialized /home/gerrit2/review_site
+
+============================================================================
+
+************************************************
+I'm having an issue here with it not working!
+
+I setup the reverse proxy just like our production server
+I copied the settings inside httpd.conf.
+I made sure HTTPD was running and also set it to start on boot.
+
+chkconfig httpd on
+chkconfig --list | grep httpd
+httpd           0:off   1:off   2:on    3:on    4:on    5:on    6:off
+
+I setup my passwd file based on location of httpd.conf:
+/home/gerrit2/review_site/access/passwd
+I added gerrit2 by greping gerrit2 /etc/shadow (not sure if it needs it).
+But also have all users in NIS domain with format of 'username:<encypt_password>'
+
+I also restarted jetty6.
+
+************************************************
+
+
+######################################################
+
+CONFIGURE JETTY6 for HTTP Authentication:
+=========================================
+Currently set to OPENID, need to change
+/home/gerrit2/review_site/etc/gerrit.config:
+ [auth]
+         type = OPENID
+
+Change to HTTP:
+cd /home/gerrit2/
+git config --file review_site/etc/gerrit.config auth.type HTTP
+git config --file review_site/etc/gerrit.config --unset auth.httpHeader
+git config --file review_site/etc/gerrit.config auth.emailFormat '{0}@yourdomain.com'
+
+gerrit.config now should look like:
+[auth]
+        type = HTTP
+        emailFormat = {0}@yourdomain.com
+
+Setup HTTP Authentication passwd file:
+
+I setup my passwd file in /home/gerrit2/review_site/access/passwd.
+
+*NIS Domain, I setup a script to 'ypcat -k passwd' and output to
+passwd file. You can do this if you have NIS domain or use shadow file.
+ ypcat -k passwd | cut -d : -f1-2 | sed -e "s/ .*:/:/" > passwd
+
+Password file format:
+=====================
+username:<encrypted-password>
+
+Edit /etc/httpd/conf/httpd.conf:
+================================
+ <Location "/">
+	# Require Authentication
+    AuthType Basic
+    AuthName "Gerrit Review Server"
+    Require valid-user
+    AuthUserFile /home/gerrit2/review_site/access/passwd
+ </Location>
+
+HTTP WITH REVERSE PROXY SETTINGS:
+=================================
+*Not sure how correct this is, but its working on our Prod Server.
+
+<VirtualHost *>
+  ServerName gitserver1.mydomain.com
+
+  ProxyRequests Off
+  ProxyVia Off
+  ProxyPreserveHost On
+
+  <Location "/ssh_info">
+     ProxyPass http://127.0.0.1:8081/ssh_info
+     Allow from all
+     Satisfy Any
+  </Location>
+
+  <Location "/">
+	# Require Authentication
+     AuthType Basic
+     AuthName "NEW Gerrit Review Server"
+     Require valid-user
+     AuthUserFile /home/gerrit2/review_site/access/passwd
+  </Location>
+
+  <Proxy *>
+     Order deny,allow
+     Allow from all
+  </Proxy>
+  # ProxyPass / http://127.0.0.1:8081/
+  ProxyPass /r/ http://127.0.0.1:8081/r/
+
+  <IfModule mod_disk_cache.c>
+     CacheEnable disk /
+     CacheIgnoreHeaders Set-Cookie
+  </IfModule>
+</VirtualHost>
+######################################################
+
+Setup Start/Stop Gerrit Daemon:
+===============================
+
+# ln -snf /home/gerrit2/review_site/bin/gerrit.sh  /etc/init.d/gerrit.sh
+# ln -snf /etc/init.d/gerrit.sh /etc/rc3.d/s90gerrit
+
+######################################################
+
+
+*Hopefully I'll get this working soon!
+=/
+
+******************************************************
+Now after doing the following:
+
+On OLD server:
+
+ - Create Dump backup of reviewdb database (2) versions
+   1. Binary dump file
+   2. Plain-text to verify and modify
+ - Modify Plain-text dump file due to username.
+   Substitue "Owner: gerrit;" for "Owner: gerrit2;"
+
+ - Since Old server schema was older, needed to Upgrade Schema to catchup to
+   gerrit v.2.1.22.
+
+  <*Insert any upgrade schema doc/stuff here>
+
+ - Resolve issue with Table owned by postgres user, rather then gerrit2
+
+
+Now run java -jar gerrit*.war init -d review_site:
+======================================================
+
+[gerrit2@san-gerrit1 ~]$ java -jar gerrit-2.1.2.2.war init -d review_site
+
+*** Gerrit Code Review 2.1.2.2
+***
+
+
+*** Git Repositories
+***
+
+Location of Git repositories   [/git/projects/git]:
+Import existing repositories   [Y/n]? Y
+
+*** SQL Database
+***
+
+Database server type           [POSTGRESQL/?]:
+Server hostname                [localhost]:
+Server port                    [(POSTGRESQL default)]:
+Database name                  [reviewdb]:
+Database username              [gerrit2]:
+Change gerrit2's password      [y/N]?
+
+*** User Authentication
+***
+
+Authentication method          [HTTP/?]:
+Get username from custom HTTP header [y/N]?
+SSO logout URL                 :
+
+*** Email Delivery
+***
+
+SMTP server hostname           [localhost]:
+SMTP server port               [(default)]:
+SMTP encryption                [NONE/?]:
+SMTP username                  :
+
+*** Container Process
+***
+
+Run as                         [gerrit2]:
+Java runtime                   [/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre]:
+Upgrade /home/gerrit2/review_site/bin/gerrit.war [Y/n]?
+Copying gerrit.war to /home/gerrit2/review_site/bin/gerrit.war
+
+*** SSH Daemon
+***
+
+Listen on address              [*]:
+Listen on port                 [29418]:
+
+*** HTTP Daemon
+***
+
+Behind reverse proxy           [Y/n]?
+Proxy uses SSL (https://)      [y/N]?
+Subdirectory on proxy server   [/]:
+Listen on address              [127.0.0.1]:
+Listen on port                 [8081]:
+
+Upgrading database schema from version 19 to 20 ...
+Upgrading database schema from version 20 to 21 ...
+Upgrading database schema from version 21 to 22 ...
+Upgrading database schema from version 22 to 23 ...
+Upgrading database schema from version 23 to 24 ...
+Upgrading database schema from version 24 to 25 ...
+Upgrading database schema from version 25 to 26 ...
+Upgrading database schema from version 26 to 27 ...
+Upgrading database schema from version 27 to 28 ...
+Upgrading database schema from version 28 to 29 ...
+Upgrading database schema from version 29 to 30 ...
+Execute the following SQL to drop unused objects:
+
+  DROP SEQUENCE project_id;
+  DROP TABLE project_rights;
+  ALTER TABLE accounts DROP COLUMN ssh_user_name;
+  ALTER TABLE account_external_ids DROP COLUMN last_used_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN stored_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN last_used_on;
+  ALTER TABLE projects DROP COLUMN project_id;
+
+Execute now [Y/n]?
+
+NEW ERRORS on DROP SEQUENCE:
+============================
+Execute the following SQL to drop unused objects:
+
+  DROP SEQUENCE project_id;
+  DROP TABLE project_rights;
+  ALTER TABLE accounts DROP COLUMN ssh_user_name;
+  ALTER TABLE account_external_ids DROP COLUMN last_used_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN stored_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN last_used_on;
+  ALTER TABLE projects DROP COLUMN project_id;
+
+Execute now [Y/n]? y
+Exception in thread "main" com.google.gwtorm.client.OrmException: Cannot apply SQL
+DROP SEQUENCE project_id
+        at com.google.gwtorm.jdbc.JdbcExecutor.execute(JdbcExecutor.java:44)
+        at com.google.gerrit.pgm.Init$SiteRun.upgradeSchema(Init.java:227)
+        at com.google.gerrit.pgm.Init.run(Init.java:85)
+        at com.google.gerrit.pgm.util.AbstractProgram.main(AbstractProgram.java:76)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:616)
+        at com.google.gerrit.launcher.GerritLauncher.invokeProgram(GerritLauncher.java:155)
+        at com.google.gerrit.launcher.GerritLauncher.mainImpl(GerritLauncher.java:89)
+        at com.google.gerrit.launcher.GerritLauncher.main(GerritLauncher.java:47)
+        at Main.main(Main.java:25)
+Caused by: org.postgresql.util.PSQLException: ERROR: must be owner of relation project_id
+        at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2062)
+        at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:1795)
+        at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:257)
+        at org.postgresql.jdbc2.AbstractJdbc2Statement.execute(AbstractJdbc2Statement.java:479)
+        at org.postgresql.jdbc2.AbstractJdbc2Statement.executeWithFlags(AbstractJdbc2Statement.java:353)
+        at org.postgresql.jdbc2.AbstractJdbc2Statement.execute(AbstractJdbc2Statement.java:345)
+        at com.google.gwtorm.jdbc.JdbcExecutor.execute(JdbcExecutor.java:42)
+        ... 11 more
+
+
+
+

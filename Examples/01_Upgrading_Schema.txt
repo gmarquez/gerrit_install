@@ -45,7 +45,7 @@
 #########################################################
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- psql -d reviewdb_NEW1 < pgsql/upgrade014_015_part1_postgres.sql 
+ psql -d reviewdb < pgsql/upgrade014_015_part1_postgres.sql 
 ================================================================
 ALTER TABLE
 NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "account_patch_reviews_pkey" for table "account_patch_reviews"
@@ -60,11 +60,11 @@ DROP INDEX
 CREATE INDEX
 UPDATE 1
 
-psql -d reviewdb_NEW1 < pgsql/upgrade014_015_part2.sql
+psql -d reviewdb < pgsql/upgrade014_015_part2.sql
 ===============================================================
 ALTER TABLE
 
-psql -d reviewdb_NEW1 < pgsql/upgrade015_016_part1_postgres.sql
+psql -d reviewdb < pgsql/upgrade015_016_part1_postgres.sql
 ================================================================
 UPDATE 555
 DROP INDEX
@@ -111,7 +111,7 @@ DROP SEQUENCE
 UPDATE 0
 UPDATE 1
 
-psql -d reviewdb_NEW1 < pgsql/upgrade015_016_part2.sql
+psql -d reviewdb < pgsql/upgrade015_016_part2.sql
 ================================================================
 DROP TABLE
 DROP TABLE
@@ -122,7 +122,7 @@ DROP TABLE
 
  Otherwise will recieve and error like this:
 
-psql -d reviewdb_NEW1 < pgsql/upgrade016_017_postgres.sql
+psql -d reviewdb < pgsql/upgrade016_017_postgres.sql
 ================================================================
 ERROR:  must be superuser to create procedural language
 ERROR:  language "plpgsql" does not exist
@@ -169,7 +169,7 @@ ALTER TABLE
 UPDATE 1
 COMMIT
 
-psql -d reviewdb_NEW1 < pgsql/upgrade017_018_postgres.sql
+psql -d reviewdb < pgsql/upgrade017_018_postgres.sql
 ================================================================
 BEGIN
  check_schema_version 
@@ -195,7 +195,7 @@ DROP TABLE
 UPDATE 1
 COMMIT
 
-psql -d reviewdb_NEW1 < pgsql/upgrade018_019_postgres.sql
+psql -d reviewdb < pgsql/upgrade018_019_postgres.sql
 ================================================================
 BEGIN
  check_schema_version 
@@ -218,6 +218,7 @@ ALTER TABLE
 DROP TABLE
 UPDATE 1
 COMMIT
+
 
 *** LETS CHECK SCHEMA_VERSION ***
 ###################################
@@ -247,7 +248,7 @@ to update the schema_version all the way to 30.
  real official git directory where ssiafp will be rsync'd to.
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-Should look like this towards ends of prompt for gerrit init scritp:
+Should look like this towards ends of prompt for gerrit init script:
 ====================================================================
 $ java -jar gerrit-2.1.2.4.war init -d review_site
 
@@ -424,7 +425,6 @@ RENAME .git to foo.git:
  mv /android1/android/git/.git /android1/android/git/foo.git
 
 LET'S MOVE ON TO THE NEXT ONE....
-
 ####################################################################################
 
 $ java -jar gerrit-2.1.2.4.war init -d review_site
@@ -634,8 +634,7 @@ Caused by: org.postgresql.util.PSQLException: ERROR: duplicate key violates uniq
         ... 20 more
 
 
-
-  * THIS_IS_GETTING_UGLY!!! *
+ * * * THIS_IS_GETTING_UGLY!!! * * *
 
 
 

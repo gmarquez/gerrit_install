@@ -109,3 +109,1531 @@ Starting Gerrit Code Review: OK
 Waiting for server to start ... OK
 Opening browser ...
 
+#########################################################
+# Copy of gerrit.config:
+#########################################################
+#[gerrit]
+#        #basePath = /gittemp/
+#        basePath = /android1/android/git/
+#        #canonicalWebUrl = http://ala-limo.wrs.com:8080/
+#[database]
+#        type = POSTGRESQL
+#        hostname = localhost
+#        database = reviewdb
+#        username = gerrit2
+#[auth]
+#        type = HTTP
+#        emailformat = {0}@windriver.com
+#[sendemail]
+#        smtpServer = localhost
+#[container]
+#        user = gerrit2
+#        javaHome = /android1/gerrit2/jdk1.6.0_19/jre
+#        #javaHome = /home/gerrit2/jdk1.6.0_19/jre
+#[sshd]
+#        listenAddress = *:29418
+#[httpd]
+#        #listenUrl = proxy-http://*:8081/r/
+#        listenUrl = proxy-http://*:8081/
+#[cache]
+#        directory = cache
+#########################################################
+
+
+####################################################################################################################
+ DATE: 07-21-2010 Gerrit init newly restored db and rsync /android1/android/git/ from ala-gitservices:/git/ssiafp/
+####################################################################################################################
+
+$ java -jar gerrit-2.1.3.war init -d review_site
+
+
+[gerrit2@ala-limo ~]$ java -jar gerrit-2.1.3.war init -d review_site
+
+*** Gerrit Code Review 2.1.3
+***
+
+Create '/android1/gerrit2/review_site' [Y/n]? Y
+
+*** Git Repositories
+***
+
+Location of Git repositories   [git]: /android1/android/git/
+Import existing repositories   [Y/n]? n
+
+*** SQL Database
+***
+
+Database server type           [H2/?]: postgresql
+Server hostname                [localhost]:
+Server port                    [(POSTGRESQL default)]:
+Database name                  [reviewdb]:
+Database username              [gerrit2]:
+gerrit2's password             :
+              confirm password :
+
+*** User Authentication
+***
+
+Authentication method          [OPENID/?]: HTTP
+Get username from custom HTTP header [y/N]? y
+Username HTTP header           [SM_USER]:
+SSO logout URL                 :
+
+*** Email Delivery
+***
+
+SMTP server hostname           [localhost]:
+SMTP server port               [(default)]:
+SMTP encryption                [NONE/?]:
+SMTP username                  :
+
+*** Container Process
+***
+
+Run as                         [gerrit2]:
+Java runtime                   [/android1/gerrit2/jdk1.6.0_19/jre]:
+Copy gerrit.war to /android1/gerrit2/review_site/bin/gerrit.war [Y/n]? Y
+Copying gerrit.war to /android1/gerrit2/review_site/bin/gerrit.war
+
+*** SSH Daemon
+***
+
+Listen on address              [*]:
+Listen on port                 [29418]:
+
+Gerrit Code Review is not shipped with Bouncy Castle Crypto v144
+  If available, Gerrit can take advantage of features
+  in the library, but will also function without it.
+Download and install it now [Y/n]? y
+Downloading http://www.bouncycastle.org/download/bcprov-jdk16-144.jar ... OK
+Checksum bcprov-jdk16-144.jar OK
+Generating SSH host key ... rsa... dsa... done
+
+*** HTTP Daemon
+***
+
+Behind reverse proxy           [y/N]? y
+Proxy uses SSL (https://)      [y/N]? N
+Subdirectory on proxy server   [/]:
+Listen on address              [*]:
+Listen on port                 [8081]:
+
+Upgrading database schema from version 19 to 20 ...
+Upgrading database schema from version 20 to 21 ...
+Upgrading database schema from version 21 to 22 ...
+Upgrading database schema from version 22 to 23 ...
+Upgrading database schema from version 23 to 24 ...
+Upgrading database schema from version 24 to 25 ...
+Upgrading database schema from version 25 to 26 ...
+Upgrading database schema from version 26 to 27 ...
+Upgrading database schema from version 27 to 28 ...
+Upgrading database schema from version 28 to 29 ...
+Upgrading database schema from version 29 to 30 ...
+Upgrading database schema from version 30 to 31 ...
+Upgrading database schema from version 31 to 32 ...
+Upgrading database schema from version 32 to 33 ...
+Upgrading database schema from version 33 to 34 ...
+Entering interactive reference rights migration tool...
+In project Hiro/platform/bionic
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/bootable/bootloader/legacy
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/bootable/diskinstaller
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/bootable/recovery
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/build
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/dalvik
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/development
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/aes
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/alsa-lib
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/apache-http
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/bison
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/bsdiff
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/bzip2
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/clearsilver
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/dbus
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/dhcpcd
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/dosfstools
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/dropbear
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/e2fsprogs
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/elfcopy
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/elfutils
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/embunit
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/emma
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/esd
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/expat
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/fdlibm
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/freetype
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/gdata
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/genext2fs
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/giflib
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/googleclient
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/grub
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/icu4c
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/jdiff
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/jhead
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/jpeg
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/libffi
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/libpcap
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/libpng
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/libxml2
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/netcat
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/netperf
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/neven
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/openssl
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/oprofile
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/ping
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/ppp
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/protobuf
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/qemu
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/safe-iop
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/sonivox
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/sqlite
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/srec
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/strace
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/tagsoup
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/tcpdump
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/tinyxml
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/tremor
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/webkit
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/xdelta3
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/yaffs2
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/external/zlib
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/frameworks/base
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/frameworks/opt/com.google.android
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/frameworks/opt/com.google.android.googlelogin
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/frameworks/opt/emoji
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/frameworks/policies/base
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/hardware/alsa_sound
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/hardware/enfora/edg308-ril
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/hardware/idcc/6071-ril
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/hardware/libhardware
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/hardware/ril
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/hardware/ti/omap3
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/hardware/ti/omx
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/AlarmClock
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/Browser
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/Calculator
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/Calendar
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/Camera
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/Contacts
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/Email
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/GoogleSearch
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/HTMLViewer
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/IM
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/Launcher
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/Mms
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/Music
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/PackageInstaller
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/Phone
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/Settings
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/SoundRecorder
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/Stk
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/Sync
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/Updater
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/apps/VoiceDialer
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/inputmethods/LatinIME
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/inputmethods/OpenWnn
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/inputmethods/PinyinIME
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/providers/CalendarProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/providers/ContactsProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/providers/DownloadProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/providers/DrmProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/providers/GoogleContactsProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/providers/GoogleSubscribedFeedsProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/providers/ImProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/providers/MediaProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/providers/TelephonyProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/packages/providers/UserDictionaryProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/prebuilt
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/system/bluetooth
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/system/core
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/system/extras
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/vendor/ti/ldp1
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/vendor/ti/zoom2
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/platform/vendor/windriver/hiro
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/repo/android/platform/external/bluez
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/repo/android/platform/external/opencore
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/repo/android/platform/external/skia
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/repo/android/platform/external/wpa_supplicant
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/repo/android/platform/hardware/libhardware_legacy
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/repo/android/platform/omapmanifest
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/repo/android/system/wlan/ti
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/repo/omapkernel
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/repo/support-tools
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/repo/u-boot
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/repo/x-loader
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project Hiro/windriver/tet3
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project SandboxTom/manifest
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project SandboxTom/Repository1
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project SandboxTom/Repository2
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? N
+In project ssiafp/arago-project.org/git/projects/linux-omap3
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/device/common
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/device/htc/common
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/device/htc/dream
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/device/htc/dream-sapphire
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/device/htc/passion
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/device/htc/passion-common
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/device/htc/sapphire
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/device/sample
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/device/ti/blaze
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/device/ti/zoom2
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/kernel/android-2.6.32-qemu
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/kernel/common
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/kernel/lk
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/kernel/msm
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/kernel/omap
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/opensource
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/bionic
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/bootable/bootloader/legacy
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/bootable/diskinstaller
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/bootable/recovery
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/build
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/cts
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/dalvik
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/development
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/aes
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/alsa-lib
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/alsa-utils
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/apache-http
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/astl
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/bison
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/blktrace
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/bluetooth/bluez
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/bluetooth/glib
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/bluetooth/hcidump
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/bluez
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/bsdiff
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/bzip2
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/check
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/clearsilver
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/connectivity
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/curl
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/dbus
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/dhcpcd
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/dnsmasq
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/dosfstools
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/dropbear
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/e2fsprogs
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/easymock
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/eglib
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/elfcopy
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/elfutils
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/embunit
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/emma
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/esd
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/expat
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/fdlibm
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/freetype
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/fsck_msdos
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/gdata
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/genext2fs
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/giflib
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/glib
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/googleclient
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/grub
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/gtest
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/guava
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/hcidump
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/icu4c
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/iproute2
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/ipsec-tools
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/iptables
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/jdiff
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/jhead
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/jpeg
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/jsr305
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/junit
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/kernel-headers
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/lcc
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/libdrm
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/libexif
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/libffi
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/libmicrohttpd
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/libnl
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/libpcap
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/libpng
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/libsyncml
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/libsynthesis
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/libustl
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/libva
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/libwbxml
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/libwsbm
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/libxml2
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/mtpd
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/netcat
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/netperf
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/neven
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/opencore
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/opensource
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/openssl
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/openvpn
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/oprofile
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/pciutils
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/pcre
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/ping
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/ppp
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/proguard
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/protobuf
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/qemu
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/quake
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/safe-iop
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/skia
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/sonivox
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/speex
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/sqlite
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/srec
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/stlport
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/strace
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/svox
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/tagsoup
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/tcpdump
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/tesseract
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/tinyxml
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/tremolo
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/tremor
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/tslib
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/v8
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/webkit
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/wimax-network-service
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/wimax-tools
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/wireless_tools
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/wpa_supplicant
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/wpa_supplicant_6
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/xdelta3
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/xmlwriter
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/yaffs2
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/external/zlib
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/frameworks/base
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/frameworks/ex
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/frameworks/opt/com.google.android
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/frameworks/opt/com.google.android.googlelogin
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/frameworks/opt/emoji
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/frameworks/policies/base
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/alsa_sound
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/broadcom/wlan
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/enfora/edg308-ril
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/idcc/6071-ril
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/intel/evanspeak
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/intel/firmware
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/intel/ivydale
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/intel/iwmc3200
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/intel/libadvci
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/intel/libcamera
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/intel/liboverlay
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/intel/omx/components
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/intel/omx/libs/libmemrar
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/intel/omx/libs/libmix
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/intel/omx/libs/psb_headers
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/intel/omx/libs/psb_video
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/intel/opengles
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/intel/rfkill
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/intel/sensors
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/intel/sst_pmic_freq
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/libhardware
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/libhardware_legacy
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/msm7k
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/option/option501-ril
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/qcom/gps
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/qsd8k
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/ril
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/ti/omap3
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/ti/omx
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/ti/syslink
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/ti/tiler
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/ti/wlan
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/hardware/via/evdo-ril
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/kernel/android-2.6.29
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/ndk
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/opensource
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/AccountsAndSyncSettings
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/AlarmClock
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Bluetooth
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Browser
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/BTWiFiTether
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Calculator
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Calendar
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Camera
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/CertInstaller
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Contacts
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/CoverFlowView
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/DeskClock
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Email
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/FM
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Gallery
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Gallery3D
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/GlobalSearch
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/GoogleSearch
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/HTMLViewer
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/IM
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Launcher
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Launcher2
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Mms
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Music
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/OMAPCamera
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/PackageInstaller
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Phone
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Protips
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Provision
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/QuickSearchBox
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Settings
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/SoundRecorder
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/SpeechRecorder
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Stk
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Sync
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/TSCalibration
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/Updater
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/VoiceDialer
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/apps/WRLauncher
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/experimental
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/inputmethods/LatinIME
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/inputmethods/OpenWnn
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/inputmethods/PinyinIME
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/providers/ApplicationsProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/providers/CalendarProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/providers/ContactsProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/providers/DownloadProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/providers/DrmProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/providers/GoogleContactsProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/providers/GoogleSubscribedFeedsProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/providers/ImProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/providers/ManagementProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/providers/MediaProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/providers/TelephonyProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/providers/UserDictionaryProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/providers/WebSearchProvider
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/services/EasService
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/services/LockAndWipe
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/wallpapers/Basic
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/wallpapers/LivePicker
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/wallpapers/MagicSmoke
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/packages/wallpapers/MusicVisualization
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/prebuilt
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/sdk
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/ssimanifest
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/system/bluetooth
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/system/core
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/system/extras
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/system/netd
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/system/vold
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/system/wlan
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/system/wlan/ti
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/aosp
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/htc/common-open
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/htc/dream-open
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/htc/prebuilt-open
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/htc/sapphire-open
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/intel
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/pv-open
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/qcom/android-open
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/qcom/msm7625_ffa
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/qcom/msm7625_surf
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/qcom/msm7627_ffa
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/qcom/msm7627_surf
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/qcom/msm7630_surf
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/qcom-opensource/bt-wlan-coex
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/qcom-opensource/diag
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/qcom-opensource/kernel-tests/mm-audio
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/qcom-opensource/omx/mm-audio
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/qcom-opensource/omx/mm-core
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/qcom-opensource/omx/mm-video
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/qcom/proprietary-open
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/qcom/qsd8250_ffa
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/qcom/qsd8250_surf
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/rowboat
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/sample
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/ti/common-open
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/ti/ldp1
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/ti/nextgen
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/ti/omap3evm
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/ti/zoom2
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addon/libs/wrs-omxil-core
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons/accuweather
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons/apps
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons/eyes-free
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons/gears4android
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons/haansoft
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons/ixchariot
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons/Licensing
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons/multitouch-demo
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons/multitouch-support
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons/Provision
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons/RedBendDM
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons/SyncApp
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons/SyncMLDemo
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons/tutorial
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons/twonkymobile
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/addons/twonkymobile.git
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/board
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/bootlogos
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/cdk
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/internal
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/products
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/support
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/supports
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/tests
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/platform/vendor/wrs/toolchain
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/repo/android/platform/external/bluez
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/repo/android/platform/external/opencore
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/repo/android/platform/external/wpa_supplicant
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/repo/android/platform/hardware/libhardware_legacy
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/repo/android/platform/omapmanifest
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/repo/android/system/wlan/ti
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/repo/omapkernel
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/repo/support-tools
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/repo/u-boot
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/repo/x-loader
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/toolchain/benchmark
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/toolchain/binutils
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/toolchain/build
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/toolchain/gcc
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/toolchain/gdb
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/toolchain/gmp
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/toolchain/gold
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/toolchain/manifest
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/toolchain/mpfr
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/tools/repo
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project ssiafp/vendor/rowboat
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project TestProject/TestProject
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project vendor/rowboat
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+Upgrading database schema from version 34 to 35 ...
+Execute the following SQL to drop unused objects:
+
+  DROP SEQUENCE project_id;
+  DROP TABLE project_rights;
+  ALTER TABLE accounts DROP COLUMN ssh_user_name;
+  ALTER TABLE account_external_ids DROP COLUMN last_used_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN stored_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN last_used_on;
+  ALTER TABLE projects DROP COLUMN project_id;
+
+Execute now [Y/n]?
+Initialized /android1/gerrit2/review_site
+Executing /android1/gerrit2/review_site/bin/gerrit.sh start
+Starting Gerrit Code Review: OK
+Waiting for server to start ... OK
+Opening browser ...
+
+
+
