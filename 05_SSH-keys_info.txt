@@ -1,0 +1,45 @@
+A request was made to copy the servers ssh-keys to gerrit's ssh-keys to use the
+same keys for anyone who logins to the server and anyone using gerrit on the server.
+
+The server uses the ssh-keys in:
+================================
+/etc/ssh/*
+
+Gerrit's ssh-keys are located in:
+=================================
+/home/gerrit2/review_site/etc/
+
+
+We will need to copy the /etc/ssh_hosts* keys to Gerrit's keys.
+Prior to copying anything, we will need to backup the existing Gerrit
+ssh-keys first in the event we break something or something doesn't go smooth.
+
+
+Shawn Pearce explained that this will work if we have Bouncy Castle Crypto
+library that OpenSSH uses:
+----
+Gerrit runs its own SSH server, with its own host
+key.  His instructions to make them the same are correct, assuming you
+installed the Bouncy Castle Crypto library.  (The library is required
+to read the same key format that OpenSSH uses.)
+----
+
+
+
+We need to avoid having users recieve the following message/warning:
+====================================================================
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that the RSA host key has just been changed.
+The fingerprint for the RSA key sent by the remote host is
+58:73:88:25:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx.
+Please contact your system administrator.
+
+
+++++++++++++++++++++++++++++
++  Results/notes/comments: +
+++++++++++++++++++++++++++++
+
