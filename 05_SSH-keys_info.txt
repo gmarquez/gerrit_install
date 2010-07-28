@@ -38,8 +38,129 @@ The fingerprint for the RSA key sent by the remote host is
 58:73:88:25:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx.
 Please contact your system administrator.
 
+We're copying these files:
+==========================
+$ sudo ls -l /etc/ssh/ssh_host_*
+-rw------- 1 root root  672 Feb 15  2008 /etc/ssh/ssh_host_dsa_key
+-rw-r--r-- 1 root root  590 Feb 15  2008 /etc/ssh/ssh_host_dsa_key.pub
+-rw------- 1 root root  963 Feb 15  2008 /etc/ssh/ssh_host_key
+-rw-r--r-- 1 root root  627 Feb 15  2008 /etc/ssh/ssh_host_key.pub
+-rw------- 1 root root 1675 Feb 15  2008 /etc/ssh/ssh_host_rsa_key
+-rw-r--r-- 1 root root  382 Feb 15  2008 /etc/ssh/ssh_host_rsa_key.pub
+
+/home/gerrit2/review_site/etc contents and ownership:
+=====================================================
+$ ls -l etc/
+total 52
+-rw-r--r-- 1 gerrit2 gerrit2  431 Jul 21 14:06 gerrit.config
+-rw-r--r-- 1 gerrit2 gerrit2    0 Jul 21 12:12 replication.config
+-rw------- 1 gerrit2 gerrit2   31 Jul 21 12:12 secure.config
+-rw------- 1 gerrit2 gerrit2  672 Jul 21 12:11 ssh_host_dsa_key
+-rw-r--r-- 1 gerrit2 gerrit2  630 Jul 21 12:11 ssh_host_dsa_key.pub
+-rw------- 1 gerrit2 gerrit2 1671 Jul 21 12:11 ssh_host_rsa_key
+-rw-r--r-- 1 gerrit2 gerrit2  422 Jul 21 12:11 ssh_host_rsa_key.pub
+
+*I've copied this folder to etc.bak.*
+
+COPYING:
+========
+$ sudo cp /etc/ssh/ssh_host_* /home/gerrit2/review_site/etc/
+
+$ ls -l etc/
+total 68
+-rw-r--r-- 1 gerrit2 gerrit2  431 Jul 21 14:06 gerrit.config
+-rw-r--r-- 1 gerrit2 gerrit2    0 Jul 21 12:12 replication.config
+-rw------- 1 gerrit2 gerrit2   31 Jul 21 12:12 secure.config
+-rw------- 1 gerrit2 gerrit2  672 Jul 28 15:22 ssh_host_dsa_key
+-rw-r--r-- 1 gerrit2 gerrit2  590 Jul 28 15:22 ssh_host_dsa_key.pub
+-rw------- 1 root    root     963 Jul 28 15:22 ssh_host_key
+-rw-r--r-- 1 root    root     627 Jul 28 15:22 ssh_host_key.pub
+-rw------- 1 gerrit2 gerrit2 1675 Jul 28 15:22 ssh_host_rsa_key
+-rw-r--r-- 1 gerrit2 gerrit2  382 Jul 28 15:22 ssh_host_rsa_key.pub
+
+$ sudo chown gerrit2:gerrit2 etc/ssh_host*
+
+$ ls -l etc/
+total 68
+-rw-r--r-- 1 gerrit2 gerrit2  431 Jul 21 14:06 gerrit.config
+-rw-r--r-- 1 gerrit2 gerrit2    0 Jul 21 12:12 replication.config
+-rw------- 1 gerrit2 gerrit2   31 Jul 21 12:12 secure.config
+-rw------- 1 gerrit2 gerrit2  672 Jul 28 15:22 ssh_host_dsa_key
+-rw-r--r-- 1 gerrit2 gerrit2  590 Jul 28 15:22 ssh_host_dsa_key.pub
+-rw------- 1 gerrit2 gerrit2  963 Jul 28 15:22 ssh_host_key
+-rw-r--r-- 1 gerrit2 gerrit2  627 Jul 28 15:22 ssh_host_key.pub
+-rw------- 1 gerrit2 gerrit2 1675 Jul 28 15:22 ssh_host_rsa_key
+-rw-r--r-- 1 gerrit2 gerrit2  382 Jul 28 15:22 ssh_host_rsa_key.pub
+
+
+
+
 
 ++++++++++++++++++++++++++++
 +  Results/notes/comments: +
 ++++++++++++++++++++++++++++
+
+$ su gerrit2
+
+
+$ ./review_site/bin/gerrit.sh stop
+Stopping Gerrit Code Review: OK
+[gerrit2@ala-limo ~]$ ./review_site/bin/gerrit.sh start
+Starting Gerrit Code Review: FAILED
+
+
+
+[gerrit2@ala-limo review_site]$ ll etc/
+total 68
+-rw-r--r-- 1 gerrit2 gerrit2  431 Jul 21 14:06 gerrit.config
+-rw-r--r-- 1 gerrit2 gerrit2    0 Jul 21 12:12 replication.config
+-rw------- 1 gerrit2 gerrit2   31 Jul 21 12:12 secure.config
+-rw------- 1 gerrit2 gerrit2  672 Jul 28 15:22 ssh_host_dsa_key
+-rw-r--r-- 1 gerrit2 gerrit2  590 Jul 28 15:22 ssh_host_dsa_key.pub
+-rw------- 1 gerrit2 gerrit2  963 Jul 28 15:22 ssh_host_key
+-rw-r--r-- 1 gerrit2 gerrit2  627 Jul 28 15:22 ssh_host_key.pub
+-rw------- 1 gerrit2 gerrit2 1675 Jul 28 15:22 ssh_host_rsa_key
+-rw-r--r-- 1 gerrit2 gerrit2  382 Jul 28 15:22 ssh_host_rsa_key.pub
+[gerrit2@ala-limo review_site]$
+[gerrit2@ala-limo review_site]$ ll etc.bak/
+total 52
+-rw-r--r-- 1 gerrit2 gerrit2  431 Jul 28 15:09 gerrit.config
+-rw-r--r-- 1 gerrit2 gerrit2    0 Jul 28 15:09 replication.config
+-rw------- 1 gerrit2 gerrit2   31 Jul 28 15:09 secure.config
+-rw------- 1 gerrit2 gerrit2  672 Jul 28 15:09 ssh_host_dsa_key
+-rw-r--r-- 1 gerrit2 gerrit2  630 Jul 28 15:09 ssh_host_dsa_key.pub
+-rw------- 1 gerrit2 gerrit2 1671 Jul 28 15:09 ssh_host_rsa_key
+-rw-r--r-- 1 gerrit2 gerrit2  422 Jul 28 15:09 ssh_host_rsa_key.pub
+[gerrit2@ala-limo review_site]$ rm etc/ssh_host_key*
+[gerrit2@ala-limo review_site]$ ll etc/
+total 52
+-rw-r--r-- 1 gerrit2 gerrit2  431 Jul 21 14:06 gerrit.config
+-rw-r--r-- 1 gerrit2 gerrit2    0 Jul 21 12:12 replication.config
+-rw------- 1 gerrit2 gerrit2   31 Jul 21 12:12 secure.config
+-rw------- 1 gerrit2 gerrit2  672 Jul 28 15:22 ssh_host_dsa_key
+-rw-r--r-- 1 gerrit2 gerrit2  590 Jul 28 15:22 ssh_host_dsa_key.pub
+-rw------- 1 gerrit2 gerrit2 1675 Jul 28 15:22 ssh_host_rsa_key
+-rw-r--r-- 1 gerrit2 gerrit2  382 Jul 28 15:22 ssh_host_rsa_key.pub
+[gerrit2@ala-limo review_site]$
+[gerrit2@ala-limo review_site]$
+[gerrit2@ala-limo review_site]$
+[gerrit2@ala-limo review_site]$ ll etc.bak/
+total 52
+-rw-r--r-- 1 gerrit2 gerrit2  431 Jul 28 15:09 gerrit.config
+-rw-r--r-- 1 gerrit2 gerrit2    0 Jul 28 15:09 replication.config
+-rw------- 1 gerrit2 gerrit2   31 Jul 28 15:09 secure.config
+-rw------- 1 gerrit2 gerrit2  672 Jul 28 15:09 ssh_host_dsa_key
+-rw-r--r-- 1 gerrit2 gerrit2  630 Jul 28 15:09 ssh_host_dsa_key.pub
+-rw------- 1 gerrit2 gerrit2 1671 Jul 28 15:09 ssh_host_rsa_key
+-rw-r--r-- 1 gerrit2 gerrit2  422 Jul 28 15:09 ssh_host_rsa_key.pub
+
+[gerrit2@ala-limo review_site]$
+[gerrit2@ala-limo review_site]$ ./bin/gerrit.sh start
+Starting Gerrit Code Review: OK
+
+
+Currently I can login to ala-limo gerrit's UI and see the ssh-keys have changed!!!
+Waiting for user to test using:
+
+repo init -u ssh://ala-serv1.wrs.com:29418/ssiafp/platform/ssimanifest.git -b froyoa-omapzoom
 
