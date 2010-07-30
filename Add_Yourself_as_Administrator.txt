@@ -1,0 +1,17 @@
+Needed to know how to accomplish adding myself as Administrator:
+================================================================
+
+To add yourself as an administrator, you'll need to either get another
+admin to add you, or force your user account in by hand:
+
+ INSERT INTO account_group_members
+ (group_id, account_id)
+ VALUES
+ ((SELECT admin_group_id FROM system_config),
+ YOUR_ACCOUNT_ID
+ );
+
+Just get YOUR_ACCOUNT_ID from the Settings page.  When you are done
+with the insert, restart the server so it picks up your new group
+membership.
+
