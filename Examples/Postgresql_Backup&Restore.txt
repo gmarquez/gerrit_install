@@ -66,6 +66,11 @@ Server to NEW Server, then updating Gerrit.war file.
    
 4). Attempt the RESTORE:
 
+   # From CMD-line:
+   sudo -u postgres pg_restore -d reviewdb backup/reviewdb_backup_08042010.dump
+   
+   or
+
    I re-created the reviewdb_NEW1 and restored reviewdb_04302010_PLAIN.backup.
    Via pgAdmin restore feature, I used: reviewdb_04302010_PLAIN.backup.
    
