@@ -1,0 +1,25 @@
+After doing the following:
+
+- backup & restore of reviewdb from production server
+- Upgrading all *schema_upgrades*, starting with "pgupgrade014_015_part1_postgres.sql"
+- Running init to have gerrit-2.1.4-rc2.war upgrade schema_version further to "40"
+
+I also did the following:
+
+- Add myself (1000082-AccountID) to Administrator group.
+- Removed all the non-ssiafp projects out of the database.
+- Removed the 'ssiafp' pre-fix name out so it just looks at /android1/android/git/.
+- Then changed the /etc/ssh "rsa | dsa" keys to $review_site/etc/ directory.
+
+
+-------------------------------------------------------------
+# cp /etc/ssh/ssh_host_rsa_key* ./review_site/etc/
+cp: overwrite `./review_site/etc/ssh_host_rsa_key'? y
+cp: overwrite `./review_site/etc/ssh_host_rsa_key.pub'? y
+
+# cp /etc/ssh/ssh_host_dsa_key* ./review_site/etc/
+cp: overwrite `./review_site/etc/ssh_host_dsa_key'? y
+cp: overwrite `./review_site/etc/ssh_host_dsa_key.pub'? y
+-------------------------------------------------------------
+
+

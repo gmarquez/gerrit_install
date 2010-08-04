@@ -107,6 +107,10 @@ reviewdb=> DELETE FROM ref_rights WHERE
 reviewdb-> project_name NOT IN (SELECT name FROM projects);
 DELETE 1696
 
+
+# Stopping here first to check if we removed non-ssiafp repos!!!
+
+
 NOW lets change ssiafp pre-fix:
 ===============================
 
@@ -128,6 +132,17 @@ UPDATE 305
 NO errors, seems okay!!!
 
 
+# Change ssiafp pre-fix name to use /android1/android/git/ or gerrit.config file.
+# Commands to paste:
+=====================
+UPDATE projects SET name = SUBSTR(name, LENGTH('ssiafp/') + 1)
+WHERE name <> (SELECT wild_project_name FROM system_config);
 
+UPDATE ref_rights SET project_name = SUBSTR(project_name, LENGTH('ssiafp/') + 1)
+WHERE project_name <> (SELECT wild_project_name FROM system_config);
+
+UPDATE changes SET dest_project_name = SUBSTR(dest_project_name, LENGTH('ssiafp/') + 1);
+
+UPDATE account_project_watches SET project_name = SUBSTR(project_name, LENGTH('ssiafp/') + 1);
 
 

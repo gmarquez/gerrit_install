@@ -15,3 +15,42 @@ Just get YOUR_ACCOUNT_ID from the Settings page.  When you are done
 with the insert, restart the server so it picks up your new group
 membership.
 
+On server:
+===========
+
+[root@san-gerrit1 gerrit2]# sudo -u postgres psql -d reviewdb
+Welcome to psql 8.1.21, the PostgreSQL interactive terminal.
+
+Type:  \copyright for distribution terms
+       \h for help with SQL commands
+       \? for help with psql commands
+       \g or terminate with semicolon to execute query
+       \q to quit
+
+reviewdb=# \c reviewdb
+You are now connected to database "reviewdb".
+reviewdb=# INSERT INTO account_group_members
+reviewdb-# (group_id, account_id)
+reviewdb-# VALUES
+reviewdb-# ((SELECT admin_group_id FROM system_config),
+reviewdb(# 1000082
+reviewdb(# );
+INSERT 0 1
+reviewdb=# \q
+
+Now need to Restert gerrit.sh to take effect!!!
+Now it shows me (1000082) in Administrator group:
+
+++++++++++++++++++++++++++++++++++++++++++++
+ Group Name	Description
+ Administrators	Gerrit Site Administrators
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+ INSERT INTO account_group_members
+ (group_id, account_id)
+ VALUES
+ ((SELECT admin_group_id FROM system_config),
+ 1000025
+ );
+

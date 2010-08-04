@@ -1636,4 +1636,50 @@ Waiting for server to start ... OK
 Opening browser ...
 
 
+############################################
+# TESTING of LATEST "gerrit-2.1.4-rc2.war":
+############################################
+# sudo -H -u gerrit2 java -jar gerrit-2.1.4-rc2.war init -d review_site
+
+*** ANSWER 'n' TO IMPORTED /android1/android/git/ question:***
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  Import existing repositories   [Y/n]? n
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Upgrading database schema from version 34 to 35 ...
+Upgrading database schema from version 35 to 36 ...
+
+Upgrading database schema from version 36 to 37 ...
+Upgrading database schema from version 37 to 38 ...
+Upgrading database schema from version 38 to 39 ...
+Upgrading database schema from version 39 to 40 ...
+Execute the following SQL to drop unused objects:
+
+  DROP SEQUENCE project_id;
+  DROP TABLE project_rights;
+  ALTER TABLE accounts DROP COLUMN default_context;
+  ALTER TABLE accounts DROP COLUMN ssh_user_name;
+  ALTER TABLE account_external_ids DROP COLUMN last_used_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN stored_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN last_used_on;
+  ALTER TABLE projects DROP COLUMN project_id;
+
+Execute now [Y/n]? Initialized /home/gerrit2/review_site
+Executing /home/gerrit2/review_site/bin/gerrit.sh start
+Starting Gerrit Code Review: OK
+Waiting for server to start ... OK
+Opening browser ...
+[root@san-gerrit1 gerrit2]# pwd
+/home/gerrit2
+
+Takes it to schema_version: 40
+===============================
+[root@san-gerrit1 gerrit2]# sudo -u postgres psql -d reviewdb -c "SELECT * FROM schema_version"
+ version_nbr | singleton
+-------------+-----------
+          40 | X
+(1 row)
+
+
+
 
