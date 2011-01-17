@@ -341,4 +341,813 @@ Waiting for server to start ... OK
 Opening browser ...
 
 
+###############################################################################
+
+GERRIT2 ACCOUNT:
+================
+------------------------
+Username: 	gerrit2
+Password:	g3rrit2
+------------------------
+Username:	postgres
+Password:	psql@dmin
+------------------------
+
+
+CUT-OVER OF ALA-GITSERVICES.WRS.COM TO ALA-LIMO.WRS.COM:
+=========================================================
+DATE: Fri Sep 17 09:26:10 PDT 2010
+
+Connect to Postgresql:
+=======================
+$ sudo -u postgres psql
+
+Show databases:
+=================
+postgres=# \l
+        List of databases
+   Name    |  Owner   | Encoding
+-----------+----------+----------
+ postgres  | postgres | UTF8
+ reviewdb  | gerrit   | UTF8
+ template0 | postgres | UTF8
+ template1 | postgres | UTF8
+(4 rows)
+
+postgres=#
+
+DUMP THE "reviewdb" DB:
+========================
+$ sudo -u postgres pg_dump -O -Fc reviewdb > ~/ALA-GITSERVICES/reviewdb_`date +'%m%d%Y'`.dump
+
+
+RSYNC THE GIT REPOS FROM ala-gitservices to ala-limo.wrs.com:
+==============================================================
+sudo nice 15 rsync -av gmarquez@ala-gitservices:/git/ssiafp/ /android1/android/git/
+
+# Complained about "nice: 15 No such file or directory"...
+
+sudo rsync -av gmarquez@ala-gitservices:/git/ssiafp/ /android1/android/git/
+
+gmarquez@ala-gitservices's password: *******
+
+*THIS TOOK A WHILE!!!*
+
+ <truncated>
+ tools/repo.git/refs/tags/v1.6.2
+ tools/repo.git/refs/tags/v1.6.3
+ tools/repo.git/refs/tags/v1.6.4
+ 
+ sent 1179956 bytes  received 8102764869 bytes  4669515.89 bytes/sec
+ total size is 8097444908  speedup is 1.00
+
+FINISHED!!!
+
+While rsync is going, 
+Going to RESTORE the dumped database from ala-gitservices to ala-limo:
+=========================================================================
+
+Moved latest dump-backup to /home/gerrit2/backup/
+
+
+POSTGRES USER:
+===========================
+Username:	postgres
+Password:	psql@dmin
+===========================
+
+[gmarquez@ala-limo gerrit2]$ sudo -u postgres dropdb reviewdb_OLD
+Password:
+Password:
+DROP DATABASE
+[gmarquez@ala-limo gerrit2]$ sudo -u postgres psql
+Password:
+Welcome to psql 8.1.20, the PostgreSQL interactive terminal.
+
+Type:  \copyright for distribution terms
+       \h for help with SQL commands
+       \? for help with psql commands
+       \g or terminate with semicolon to execute query
+       \q to quit
+
+postgres=# \l
+        List of databases
+   Name    |  Owner   | Encoding
+-----------+----------+----------
+ postgres  | postgres | UTF8
+ reviewdb  | gerrit2  | UTF8
+ template0 | postgres | UTF8
+ template1 | postgres | UTF8
+(4 rows)
+
+postgres=#
+
+RESTORE:
+========
+sudo -u postgres pg_restore -d reviewdb  /home/gerrit2/backup/reviewdb_09172010.dump
+
+*Had some errors, so I'm going to drop and recreate the database!!!
+
+$ sudo -u postgres dropdb reviewdb
+Password:
+DROP DATABASE
+
+
+CREATE DATABASE:
+================
+$ sudo -u postgres createdb -E UTF-8 -O gerrit reviewdb
+Password:
+CREATE DATABASE
+
+*Need to set gerrit user first due to dump/restore owned by gerrit user, not gerrit2!!!
+
+TRY RESTORE AGAIN:
+===================
+sudo -u postgres pg_restore -d reviewdb  /home/gerrit2/backup/reviewdb_09172010.dump
+
+[gmarquez@ala-limo gerrit2]$ sudo -u postgres pg_restore -d reviewdb ./backup/reviewdb_09172010.dump
+Password:
+
+*** LOOKS GOOD NO ERRORS!!!! ***
+
+NOW WE'RE GOING TO CHANGE PERMISSIONS BACK TO 'gerrit2' USER:
+==============================================================
+*However I'm using pgAdmin GUI tool to make it much easier!!!
+
+CHANGE OWNER TO GERRIT FOR EACH OF THESE:
+ - reviewdb database (top-level)
+ - reviewdb / Schemas / public / Sequences (7) (*ALL OF THESE*).
+ - reviewdb / Schemas / public / Tables (27) (*ALL OF THESE*).
+
+*Make sure you "REFRESH" to verify all owned by "gerrit2" user!!!
+
+NOW WE NEED TO UPGRADE SCHEMA FROM DOWNLOADED SCHEMA_UPGRADE.ZIP:
+=================================================================
+* Extraced to /home/gerrit2/pgsql/ directory and I removed all the mysql ones:
+
+* Install of these starting with "upgrade014_015_part1_postgres.sql".
+
+[gmarquez@ala-limo gerrit2]$ ll pgsql/ | awk '{print $9}'
+
+  README
+  upgrade003_004.sql
+  upgrade004_005_part1.sql
+  upgrade004_005_part2.sql
+  upgrade005_006.sql
+  upgrade006_007.sql
+  upgrade007_008.sql
+  upgrade008_009.sql
+  upgrade009_010.sql
+  upgrade010_011.sql
+  upgrade011_012_part1.sql
+  upgrade011_012_part2.sql
+  upgrade012_013_postgres.sql
+  upgrade013_014_postgres.sql
+  upgrade014_015_part1_postgres.sql
+  upgrade014_015_part2.sql
+  upgrade015_016_part1_postgres.sql
+  upgrade015_016_part2.sql
+  upgrade016_017_postgres.sql
+  upgrade017_018_postgres.sql
+  upgrade018_019_postgres.sql
+
+
+FIRST LET'S CHECK THE CURRENT SCHEMA FROM THE RESTORE:
+======================================================
+[gmarquez@ala-limo gerrit2]$ sudo -u postgres psql reviewdb -c "SELECT * FROM schema_version"
+Password:
+Password:
+ version_nbr | singleton
+-------------+-----------
+          14 | X
+(1 row)
+
+
+START UPGRADE SCHEMA:
+======================
+ sudo -u postgres psql -d reviewdb < pgsql/upgrade014_015_part1_postgres.sql
+ 
+
+[gmarquez@ala-limo gerrit2]$ sudo -u postgres psql -d reviewdb < pgsql/upgrade014_015_part1_postgres.sql
+Password:
+ALTER TABLE
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "account_patch_reviews_pkey" for table "account_patch_reviews"
+CREATE TABLE
+ALTER TABLE
+INSERT 0 1
+INSERT 0 1
+INSERT 0 611
+DROP INDEX
+DROP INDEX
+DROP INDEX
+CREATE INDEX
+UPDATE 1
+[gmarquez@ala-limo gerrit2]$ sudo -u postgres psql -d reviewdb < pgsql/upgrade014_015_part2.sql
+Password:
+ALTER TABLE
+[gmarquez@ala-limo gerrit2]$ sudo -u postgres psql -d reviewdb < pgsql/upgrade015_016_part1_postgres.sql
+Password:
+UPDATE 611
+DROP INDEX
+DROP INDEX
+DROP INDEX
+DELETE 0
+ALTER TABLE
+UPDATE 372
+ALTER TABLE
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "account_project_watches_pkey" for table "account_project_watches"
+ALTER TABLE
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+DELETE 0
+ALTER TABLE
+UPDATE 6051
+ALTER TABLE
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "project_rights_pkey" for table "project_rights"
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+UPDATE 9710
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "patch_set_approvals_pkey" for table "patch_set_approvals"
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER INDEX
+ALTER INDEX
+UPDATE 45
+UPDATE 0
+UPDATE 0
+DROP INDEX
+CREATE INDEX
+ALTER TABLE
+DROP SEQUENCE
+UPDATE 0
+UPDATE 1
+[gmarquez@ala-limo gerrit2]$ sudo -u postgres psql -d reviewdb < pgsql/upgrade015_016_part2.sql
+Password:
+DROP TABLE
+DROP TABLE
+[gmarquez@ala-limo gerrit2]$ sudo -u postgres psql -d reviewdb < pgsql/upgrade016_017_postgres.sql
+Password:
+CREATE LANGUAGE
+CREATE FUNCTION
+ALTER TABLE
+BEGIN
+ check_schema_version
+----------------------
+ OK
+(1 row)
+
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+UPDATE 2549
+CREATE INDEX
+ALTER TABLE
+UPDATE 1
+COMMIT
+[gmarquez@ala-limo gerrit2]$ sudo -u postgres psql -d reviewdb < pgsql/upgrade017_018_postgres.sql
+Password:
+BEGIN
+ check_schema_version
+----------------------
+ OK
+(1 row)
+
+ALTER TABLE
+UPDATE 1
+UPDATE 1
+ALTER TABLE
+UPDATE 7
+UPDATE 1
+ALTER TABLE
+ALTER TABLE
+UPDATE 0
+DROP INDEX
+CREATE INDEX
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD PRIMARY KEY will create implicit index "account_external_ids_pkey" for table "account_external_ids"
+ALTER TABLE
+DROP TABLE
+UPDATE 1
+COMMIT
+[gmarquez@ala-limo gerrit2]$ sudo -u postgres psql -d reviewdb < pgsql/upgrade018_019_postgres.sql
+Password:
+BEGIN
+ check_schema_version
+----------------------
+ OK
+(1 row)
+
+INSERT 0 1
+UPDATE 1431
+ALTER TABLE
+NOTICE:  ALTER TABLE / ADD UNIQUE will create implicit index "account_groups_external_name_key" for table "account_groups"
+ALTER TABLE
+ALTER TABLE
+UPDATE 1
+UPDATE 1
+UPDATE 0
+UPDATE 11
+ALTER TABLE
+ALTER TABLE
+DROP TABLE
+UPDATE 1
+COMMIT
+
+RE-CHECK SCHEMA, SHOULD BE UP TO 19:
+=====================================
+[gmarquez@ala-limo gerrit2]$ sudo -u postgres psql reviewdb -c "SELECT * FROM schema_version"
+Password:
+ version_nbr | singleton
+-------------+-----------
+          19 | X
+(1 row)
+
+
+LOOKS GOOD!!!!
+
+NEXT WE NEED TO INITIALIZE THE REVIEW_SITE WITH INIT SCRIPT, 
+WHICH WILL UPGRADE SCHEMA ALL THE WAY TO SCHEMA_VERSTION 30!!!
+
+Download latest release of gerrit-<version>.war file from:
+
+  http://gerrit.googlecode.com/
+ 
+Currently, the latest release is; gerrit-2.1.5.war:
+
+ wget http://gerrit.googlecode.com/files/gerrit-2.1.5.war
+ 
+Saved to /home/gerrit2/Gerrit.WARs/
+
+
+JUST FOR CHECKPOINT PURPOSES, I'M GOING TO DUMP THE DATABASE AT THIS POINT!!!
+==============================================================================
+
+[gmarquez@ala-limo gerrit2]$ sudo -u postgres pg_dump -O -Fc reviewdb > backup/reviewdb_09172010_PRE-INIT.dump
+Password:
+Password:
+
+[gmarquez@ala-limo gerrit2]$ ls -ltr backup/
+total 3248
+-rw-rwxr--+ 1 gerrit2  users  776920 Aug  2 10:49 reviewdb_backup_08022010.dump
+-rw-r--r--  1 gmarquez users 1638400 Sep 17 09:29 reviewdb_09172010.dump
+-rw-r--r--  1 gmarquez users  882489 Sep 17 11:18 reviewdb_09172010_PRE-INIT.dump
+
+CHANGE USER TO 'gerrit2':
+==========================
+su gerrit2
+password: g3rrit2
+
+java -version & javac -version is wrong version.
+
+USE set_java_env.txt script for "java and javac 1.6.0_19"
+
+$ source set_java_env.txt
+
+$ java -version
+java version "1.6.0_19"
+Java(TM) SE Runtime Environment (build 1.6.0_19-b04)
+Java HotSpot(TM) Server VM (build 16.2-b04, mixed mode)
+
+$ javac -version
+javac 1.6.0_19
+
+
+INIT REVIEW_SITE:
+=================
+* * * DO NOT "IMPORT" GIT DIRECTORY * * *
+
+This is critical because we don't want duplicate git repos from the database restore!!!
+
+
+ $ java -jar gerrit-2.1.5.war init -d review_site
+    
+  Follow prompts, and at bottom should update schema up to 30:
+  
+  
+CHECKING OUT THE SIZES ON BOTH ALA-GITSERVCICES:/git/ssiafp/ AND ALA-LIMO:/android1/android/git/
+SHOWED SOME SIGNIFICANT SIZE DIFFERENCES WHICH NEEDS TO BE CORRECTED, SO I'M GOING TO FIX THIS:
+=================================================================================================
+  [gmarquez@ala-gitservices ~]$ du -s /git/ssiafp/
+  8150588 /git/ssiafp/
+
+* Using: --delete to remove destination files if not present on source:
+
+$ sudo nice -15  rsync -av --delete gmarquez@ala-gitservices:/git/ssiafp/. /android1/android/git/.
+Password:
+gmarquez@ala-gitservices's password:
+
+receiving file list ... done
+deleting vendor/radzy/gleep.git/refs/tags/
+deleting vendor/radzy/gleep.git/refs/heads/
+deleting vendor/radzy/gleep.git/refs/
+deleting vendor/radzy/gleep.git/objects/pack/
+deleting vendor/radzy/gleep.git/objects/info/
+deleting vendor/radzy/gleep.git/objects/
+deleting vendor/radzy/gleep.git/logs/refs/heads/
+deleting vendor/radzy/gleep.git/logs/refs/
+deleting vendor/radzy/gleep.git/logs/
+deleting vendor/radzy/gleep.git/branches/
+deleting vendor/radzy/gleep.git/description
+deleting vendor/radzy/gleep.git/config
+deleting vendor/radzy/gleep.git/HEAD
+deleting vendor/radzy/gleep.git/
+deleting vendor/radzy/
+deleting vendor/
+./
+testfile.txt
+
+sent 48 bytes  received 1974829 bytes  25482.28 bytes/sec
+total size is 8097444925  speedup is 4100.23
+
+ALA-GITSERVICES:
+================
+[gmarquez@ala-gitservices ssiafp]$ du -s --apparent-size
+7966958 .
+[gmarquez@ala-gitservices ssiafp]$ du -sh --apparent-size
+7.6G    .
+
+ALA-LIMO:
+==========
+[gmarquez@ala-limo git]$ du -s --apparent-size .
+7966990 .
+[gmarquez@ala-limo git]$ du -sh --apparent-size .
+7.6G    .
+
+32-bytes extra on ala-limo, but this should be okay!!!
+
+
+(CONTINUING) INIT REVIEW_SITE:
+================================
+* * * DO NOT "IMPORT" GIT DIRECTORY * * *
+
+This is critical because we don't want duplicate git repos from the database restore!!!
+
+
+ $ java -jar gerrit-2.1.5.war init -d review_site
+    
+  Follow prompts, and at bottom should update schema up to 30:
+
+BACKUP review_site dir: $ mv review_site/ review_site.BAK
+
+LOGGING:
+#################################################################
+[gerrit2@ala-limo ~]$ java -jar Gerrit.WARs/gerrit-2.1.5.war init -d review_site
+
+*** Gerrit Code Review 2.1.5
+***
+
+Create '/android1/gerrit2/review_site' [Y/n]? y
+
+*** Git Repositories
+***
+
+Location of Git repositories   [git]: /android1/android/git/
+Import existing repositories   [Y/n]? n
+
+*** SQL Database
+***
+
+Database server type           [H2/?]: ?
+       Supported options are:
+         h2
+         postgresql
+         mysql
+         jdbc
+Database server type           [H2/?]: postgresql
+Server hostname                [localhost]:
+Server port                    [(POSTGRESQL default)]:
+Database name                  [reviewdb]:
+Database username              [gerrit2]:
+gerrit2's password             :
+              confirm password :
+
+*** User Authentication
+***
+
+Authentication method          [OPENID/?]: ?
+       Supported options are:
+         openid
+         http
+         http_ldap
+         ldap
+         ldap_bind
+         development_become_any_account
+Authentication method          [OPENID/?]: http
+Get username from custom HTTP header [y/N]?
+SSO logout URL                 :
+
+*** Email Delivery
+***
+
+SMTP server hostname           [localhost]:
+SMTP server port               [(default)]:
+SMTP encryption                [NONE/?]:
+SMTP username                  :
+
+*** Container Process
+***
+
+Run as                         [gerrit2]:
+Java runtime                   [/android1/gerrit2/jdk1.6.0_19/jre]:
+Copy gerrit.war to /android1/gerrit2/review_site/bin/gerrit.war [Y/n]? Y
+Copying gerrit.war to /android1/gerrit2/review_site/bin/gerrit.war
+
+*** SSH Daemon
+***
+
+Listen on address              [*]:
+Listen on port                 [29418]:
+
+Gerrit Code Review is not shipped with Bouncy Castle Crypto v144
+  If available, Gerrit can take advantage of features
+  in the library, but will also function without it.
+Download and install it now [Y/n]? Y
+Downloading http://www.bouncycastle.org/download/bcprov-jdk16-144.jar ...
+
+do_ypcall: clnt_call: RPC: Timed out
+do_ypcall: clnt_call: RPC: Timed out
+ OK
+Checksum bcprov-jdk16-144.jar OK
+Generating SSH host key ... rsa... dsa... done
+
+*** HTTP Daemon
+***
+
+Behind reverse proxy           [y/N]? y
+Proxy uses SSL (https://)      [y/N]?
+Subdirectory on proxy server   [/]:
+Listen on address              [*]:
+Listen on port                 [8081]:
+
+Upgrading database schema from version 19 to 20 ...
+Upgrading database schema from version 20 to 21 ...
+Upgrading database schema from version 21 to 22 ...
+Upgrading database schema from version 22 to 23 ...
+Upgrading database schema from version 23 to 24 ...
+Upgrading database schema from version 24 to 25 ...
+Upgrading database schema from version 25 to 26 ...
+Upgrading database schema from version 26 to 27 ...
+Upgrading database schema from version 27 to 28 ...
+Upgrading database schema from version 28 to 29 ...
+Upgrading database schema from version 29 to 30 ...
+Upgrading database schema from version 30 to 31 ...
+Upgrading database schema from version 31 to 32 ...
+Upgrading database schema from version 32 to 33 ...
+Upgrading database schema from version 33 to 34 ...
+Entering interactive reference rights migration tool...
+In project Hiro/platform/bionic
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+
+<truncated>
+
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? y
+In project ssiafp/tools/repo
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? y
+In project ssiafp/vendor/rowboat
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? y
+In project TestProject/TestProject
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? y
+
+In project vendor/rowboat
+For category pTAG
+Should rights for pattern refs/tags//* be considered exclusive? [y/N]? y
+yUpgrading database schema from version 34 to 35 ...
+Upgrading database schema from version 35 to 36 ...
+Upgrading database schema from version 36 to 37 ...
+Upgrading database schema from version 37 to 38 ...
+
+Upgrading database schema from version 38 to 39 ...
+Upgrading database schema from version 39 to 40 ...
+Execute the following SQL to drop unused objects:
+
+  DROP SEQUENCE project_id;
+  DROP TABLE project_rights;
+  ALTER TABLE accounts DROP COLUMN default_context;
+  ALTER TABLE accounts DROP COLUMN ssh_user_name;
+  ALTER TABLE account_external_ids DROP COLUMN last_used_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN stored_on;
+  ALTER TABLE account_ssh_keys DROP COLUMN last_used_on;
+  ALTER TABLE projects DROP COLUMN project_id;
+
+Execute now [Y/n]? Initialized /android1/gerrit2/review_site
+Executing /android1/gerrit2/review_site/bin/gerrit.sh start
+git: error while loading shared libraries: libcrypto.so.4: cannot open shared object file: No such file or directory
+Cannot find a JRE or JDK. Please set JAVA_HOME to a >=1.6 JRE
+error: cannot start Gerrit: exit status 1
+Waiting for server to start ...
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+Had a problem with gerrit2 users environment using git!!!
+Which git showed my /folk/gmarquez/bin/git one!!!
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+
+
+#########################
+ALL y ,except:
+*Should rights for pattern refs/tags//* be considered exclusive? [y/N]?
+In project Hiro/platform/system/bluetooth
+#########################
+
+
+
+NEXT WE NEED TO MODIFY MYSELF AND RADZY TO THE ADMIN GROUP:
+============================================================
+
+$ sudo -u postgres psql
+Password:
+Sorry, try again.
+Password:
+Password:
+Welcome to psql 8.1.20, the PostgreSQL interactive terminal.
+
+Type:  \copyright for distribution terms
+       \h for help with SQL commands
+       \? for help with psql commands
+       \g or terminate with semicolon to execute query
+       \q to quit
+
+postgres=# \l;
+        List of databases
+   Name    |  Owner   | Encoding
+-----------+----------+----------
+ postgres  | postgres | UTF8
+ reviewdb  | gerrit2  | UTF8
+ template0 | postgres | UTF8
+ template1 | postgres | UTF8
+(4 rows)
+
+postgres=# \c reviewdb
+You are now connected to database "reviewdb".
+
+
+reviewdb=# \c reviewdb
+You are now connected to database "reviewdb".
+reviewdb=# INSERT INTO account_group_members
+reviewdb-# (group_id, account_id)
+reviewdb-# VALUES
+reviewdb-# ((SELECT admin_group_id FROM system_config),
+reviewdb(# 1000082
+reviewdb(# );
+INSERT 0 1
+reviewdb=# \q
+
+Now need to Restert gerrit.sh to take effect!!!
+Now it shows me (1000082) in Administrator group:
+
+++++++++++++++++++++++++++++++++++++++++++++
+ Group Name	Description
+ Administrators	Gerrit Site Administrators
+++++++++++++++++++++++++++++++++++++++++++++
+
+MYSELF:
+========
+reviewdb=# INSERT INTO account_group_members
+reviewdb-# (group_id, account_id)
+reviewdb-# VALUES
+reviewdb-# ((SELECT admin_group_id FROM system_config),
+reviewdb(# 1000082
+reviewdb(# );
+INSERT 0 1
+
+RADZY:
+========
+reviewdb=# INSERT INTO account_group_members
+reviewdb-# (group_id, account_id)
+reviewdb-# VALUES
+reviewdb-# ((SELECT admin_group_id FROM system_config),
+reviewdb(# 1000025
+reviewdb(# );
+INSERT 0 1
+reviewdb=# \q
+
+
+NOW WE NEED TO REMOVE ALL THE SSIAFP PRE-FIX STUFF OUT:
+========================================================
+Password for user gerrit2:
+Welcome to psql 8.1.20, the PostgreSQL interactive terminal.
+
+Type:  \copyright for distribution terms
+       \h for help with SQL commands
+       \? for help with psql commands
+       \g or terminate with semicolon to execute query
+       \q to quit
+
+reviewdb=> \l
+        List of databases
+   Name    |  Owner   | Encoding
+-----------+----------+----------
+ postgres  | postgres | UTF8
+ reviewdb  | gerrit2  | UTF8
+ template0 | postgres | UTF8
+ template1 | postgres | UTF8
+(4 rows)
+
+reviewdb=> DELETE FROM projects
+reviewdb-> WHERE name <> (SELECT wild_project_name FROM system_config)
+reviewdb-> AND name NOT LIKE 'ssiafp/%';
+DELETE 263
+reviewdb=> DELETE FROM account_project_watches WHERE
+reviewdb-> project_name NOT IN (SELECT name FROM projects);
+DELETE 14
+reviewdb=> DELETE FROM changes WHERE
+reviewdb-> dest_project_name NOT IN (SELECT name FROM projects);
+DELETE 340
+reviewdb=> DELETE FROM change_messages WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 940
+reviewdb=> DELETE FROM patch_comments WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 83
+reviewdb=> DELETE FROM patch_set_ancestors WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 374
+reviewdb=> DELETE FROM patch_set_approvals WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 1137
+reviewdb=> DELETE FROM patch_sets WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 374
+reviewdb=> DELETE FROM patch_sets WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 0
+reviewdb=> DELETE FROM patch_sets WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+DELETE 0
+reviewdb=> DELETE FROM patch_set_info WHERE
+reviewdb-> change_id NOT IN (SELECT change_id FROM changes);
+ERROR:  relation "patch_set_info" does not exist
+reviewdb=> DELETE FROM ref_rights WHERE
+reviewdb-> project_name NOT IN (SELECT name FROM projects);
+DELETE 1709
+reviewdb=> DELETE FROM project_rights WHERE
+reviewdb-> project_name NOT IN (SELECT name FROM projects);
+ERROR:  relation "project_rights" does not exist
+reviewdb=> DELETE FROM ref_rights WHERE
+reviewdb-> project_name NOT IN (SELECT name FROM projects);
+DELETE 0
+reviewdb=> UPDATE projects SET name = SUBSTR(name, LENGTH('ssiafp/') + 1)
+reviewdb-> WHERE name <> (SELECT wild_project_name FROM system_config);
+UPDATE 348
+reviewdb=> UPDATE ref_rights SET project_name = SUBSTR(project_name, LENGTH('ssiafp/') + 1)
+reviewdb-> WHERE project_name <> (SELECT wild_project_name FROM system_config);
+UPDATE 4339
+reviewdb=> UPDATE changes SET dest_project_name = SUBSTR(dest_project_name, LENGTH('ssiafp/') + 1);
+UPDATE 2209
+reviewdb=> UPDATE account_project_watches SET project_name = SUBSTR(project_name, LENGTH('ssiafp/') + 1);
+UPDATE 358
+reviewdb=> \q
+[gmarquez@ala-limo gerrit2]$
+
+
+
+After doing the following:
+
+- backup & restore of reviewdb from production server
+- Upgrading all *schema_upgrades*, starting with "pgupgrade014_015_part1_postgres.sql"
+- Running init to have gerrit-2.1.4-rc2.war upgrade schema_version further to "40"
+
+I also did the following:
+
+- Add myself (1000082-AccountID) to Administrator group.
+- Removed all the non-ssiafp projects out of the database.
+- Removed the 'ssiafp' pre-fix name out so it just looks at /android1/android/git/.
+- Then changed the /etc/ssh "rsa | dsa" keys to $review_site/etc/ directory.
+
+
+-------------------------------------------------------------
+# cp /etc/ssh/ssh_host_rsa_key* ./review_site/etc/
+cp: overwrite `./review_site/etc/ssh_host_rsa_key'? y
+cp: overwrite `./review_site/etc/ssh_host_rsa_key.pub'? y
+
+# cp /etc/ssh/ssh_host_dsa_key* ./review_site/etc/
+cp: overwrite `./review_site/etc/ssh_host_dsa_key'? y
+cp: overwrite `./review_site/etc/ssh_host_dsa_key.pub'? y
+-------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
 
